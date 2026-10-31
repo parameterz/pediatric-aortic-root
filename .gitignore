@@ -1,0 +1,18 @@
+# PHN public-use data must not be redistributed
+*.sas7bdat
+*.xpt
+*.rds
+*.RData
+*.rda
+data/
+raw/
+
+# R session and working output
+.Rhistory
+.Rproj.user/
+*.Rproj
+aao_explore/
+
+# OS clutter
+.DS_Store
+Thumbs.db
