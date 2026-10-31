@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="How the Box-Cox shape parameter changes aortic z-scores in the tail.">
+<title>Distribution Shape</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/site.css">
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<div class="page">
+  <nav class="sitenav" aria-label="Pages"><a class="brand" href="index.html">Pediatric Aortic Z-Scores</a><a class="tab" href="index.html">Calculator</a><a class="tab" href="charts.html">Reference charts</a><a class="tab" href="shape.html" aria-current="page">Distribution shape</a><a class="tab" href="diagnostics.html">Diagnostics</a><a class="tab" href="validation.html">Validation</a></nav>
+  <header>
+    <div class="eyebrow">Distribution shape</div>
+    <h1>Why one aorta can have very different z-scores</h1>
+    <p class="lede">Every z-score assumes a shape for the healthy distribution. Near the middle the shape barely matters; for a severely dilated aorta it can double the z-score. Move the slider to see how.</p>
+  </header>
+
+  <section class="panel prose">
+    <h2>What λ does</h2>
+    <p>A z-score needs three things: the expected (median) diameter, the spread, and the shape of the distribution. The shape is set by the Box-Cox power, λ. With λ = 0, diameters are log-normal, so being 20% above the median counts the same at any size. With λ = 1 they are normal in millimetres, which is the assumption behind ratio z-scores such as diameter ÷ BSA<sup>0.5</sup>. With λ = 2 they are normal on the scale of an area, as with CSA/height.</p>
+    <p>The calculator estimates λ from the healthy children for each level instead of assuming it. Here the median and spread stay at the fitted values for the child below, and only λ changes.</p>
+  </section>
+
+  <div class="work">
+    <section class="panel" aria-labelledby="c-h">
+      <h2 id="c-h">Child and measurement</h2>
+      <form id="f" novalidate>
+        <div class="example-note">Example: the 8-year-old boy with a 40 mm ascending aorta.</div>
+        <div class="tabs" id="level-tabs" role="group" aria-label="Level">
+          <button type="button" data-k="SOV" aria-pressed="false"><span class="dot" style="background:var(--c-sov)"></span>Sinuses</button>
+          <button type="button" data-k="STJ" aria-pressed="false"><span class="dot" style="background:var(--c-stj)"></span>ST junction</button>
+          <button type="button" data-k="AAO" aria-pressed="true"><span class="dot" style="background:var(--c-aao)"></span>Ascending</button>
+        </div>
+        <div class="field"><label for="d">Diameter</label><div class="unit-input"><input id="d" inputmode="decimal" autocomplete="off" value="40"><span>mm</span></div></div>
+        <div class="two">
+          <div class="field"><label for="ht">Height</label><div class="unit-input"><input id="ht" inputmode="decimal" autocomplete="off" value="128"><span>cm</span></div></div>
+          <div class="field"><label for="wt">Weight</label><div class="unit-input"><input id="wt" inputmode="decimal" autocomplete="off" value="28"><span>kg</span></div></div>
+        </div>
+        <div class="two">
+          <div class="field"><label for="age">Age</label><div class="unit-input"><input id="age" inputmode="decimal" autocomplete="off" value="8"><span>years</span></div></div>
+          <div class="field"><span class="label" id="sex-l">Sex</span>
+            <div class="seg" role="radiogroup" aria-labelledby="sex-l">
+              <input type="radio" name="sex" id="sex-f" value="F"><label for="sex-f">Female</label>
+              <input type="radio" name="sex" id="sex-m" value="M" checked><label for="sex-m">Male</label>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="lam">Shape, λ = <span id="lam-out" class="mono">—</span></label>
+          <input type="range" id="lam" min="0" max="2" step="0.01" value="0.37" style="width:100%">
+          <div class="tabs">
+            <button type="button" data-lam="0">Log (0)</button>
+            <button type="button" data-lam="fit" id="fit-btn">Fitted</button>
+            <button type="button" data-lam="1">Linear (1)</button>
+            <button type="button" data-lam="2">Squared (2)</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" aria-live="polite">
+      <h2>Result at this shape</h2>
+      <p class="sub" id="need" hidden>Enter a diameter, height and age.</p>
+      <div id="results" style="display:grid;gap:14px">
+        <div class="zgroup"><span class="zval"><small>z</small><span id="z">—</span></span><span class="chip none" id="cat">—</span></div>
+        <div class="rfacts">
+          <span>Percent of expected <b id="pct">—</b></span>
+          <span>Median <b id="med">—</b></span>
+          <span>Spread (σ) <b id="sig">—</b></span>
+          <span>Using the <b id="model" style="font-family:var(--font-ui)">—</b></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Shape</th><th class="num">z</th><th>Band</th><th class="num">D at z +2</th><th class="num">+3.5</th><th class="num">+5</th></tr></thead>
+            <tbody id="lam-tab"></tbody>
+          </table>
+        </div>
+        <p class="sub" style="margin:0">Percent of expected does not change with λ. The z-score and the cutoffs do, and the differences grow the further out you go.</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2>Healthy distribution for this child</h2>
+    <div class="chart"><svg id="dens" viewBox="0 0 640 300" role="img" aria-label="Distribution of healthy diameters for this child under the selected shape"></svg></div>
+    <div class="legend" id="dens-legend" style="margin-top:6px"></div>
+  </section>
+
+  <section class="panel">
+    <h2>z-score by diameter under four shapes</h2>
+    <div class="chart"><svg id="zplot" viewBox="0 0 640 320" role="img" aria-label="z-score against diameter for lambda 0, fitted, 1 and 2"></svg></div>
+    <p class="scale-cap" style="margin:6px 0 0">Colored horizontal lines mark z = 2, 3.5 and 5. The dotted vertical line is the entered diameter. The curves agree near the median and spread apart in the tail, where the reference data run out (beyond about z ±4). Hover to read values.</p>
+  </section>
+
+  <section class="panel prose">
+    <h2>What the data say</h2>
+    <p>The fitted λ is about 0.05 at the sinuses (essentially log-normal), and about 0.4 at the sinotubular junction and the ascending aorta. A shape of 2 was strongly rejected at every level. Because the median and spread here stay fixed while λ moves, the alternative shapes are illustrations rather than refitted models; a full refit at a fixed λ also adjusts the spread slightly.</p>
+    <p>No healthy child in the reference data sits much beyond z ±4, so past that point any z-score, from any calculator, depends on the assumed shape rather than on data. That is why the calculator also reports percent of expected.</p>
+  </section>
+  <div class="tip" id="tip" hidden></div>
+  <footer>
+    <p>The NIH/NHLBI Pediatric Heart Network Echo-Z/Normal ECG dataset was used in preparation of this work. Data were downloaded from www.pediatricheartnetwork.org on 01/01/2026.</p>
+    <p>This site is an independent analysis and is not a product of the Pediatric Heart Network. Calculations run in your browser; nothing you enter is sent anywhere.</p>
+  </footer>
+</div>
+<script src="models/root_bccg.js"></script>
+<script src="tests/root_bccg_testcases.js"></script>
+<script src="js/aortic-model.js"></script>
+<script src="js/shape.js"></script>
+</body>
+</html>

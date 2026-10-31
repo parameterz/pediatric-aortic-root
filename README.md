@@ -4,9 +4,17 @@
 
 A browser-based z-score calculator for the **sinuses of Valsalva**, **sinotubular junction** and **ascending aorta** in children, built from the NIH/NHLBI Pediatric Heart Network (PHN) Echo-Z normal echocardiogram dataset (about 3,200 healthy, non-obese children from birth to 18 years).
 
-**Live calculator:** open `index.html`, or the GitHub Pages site for this repository once Pages is enabled.
+**Site:** enable GitHub Pages for this repository, or open `index.html` directly from disk.
 
-Everything runs in the browser. Nothing entered on the page is sent anywhere.
+| Page | What it shows |
+|---|---|
+| `index.html` | Calculator: z-score, expected diameter, normal range and percent of expected for each level, with a weight-for-height panel and a comparison with other methods |
+| `charts.html` | Reference charts of diameter by height (z −2 to +5) for each level and sex, plus a visit tracker |
+| `shape.html` | Interactive explainer: how the Box-Cox shape λ changes the z-score of one diameter |
+| `diagnostics.html` | Residuals against body size, Q-tests, Q-Q, histogram, worm plots, shape comparison and local height exponents (aggregated summaries only) |
+| `validation.html` | Every reference case recomputed in the browser and compared with R |
+
+Everything runs in the browser. Nothing entered on the pages is sent anywhere.
 
 ## What the calculator gives
 
@@ -58,26 +66,33 @@ Only clear errors were excluded, never values that were merely unusual.
 ## Repository layout
 
 ```
-index.html                    the calculator (self-contained; model and test cases embedded)
-models/root_bccg.json         exported model tables (grids for M, σ, weight for height, age; λ per level)
-tests/root_bccg_testcases.csv R z-scores used by the page's self-test
-R/aortic_root_models.R        data preparation, cleaning, exponents, location-scale GAMs, checks
-R/export_bccg.R               fits the BCCG models and exports the lookup tables
-R/diagnostics_qtests.R        λ comparison, Q-tests, worm plots, tail rates
-R/archive/                    earlier ascending-aorta exploration (CSA/height critique, first calculator)
+index.html, charts.html, shape.html, diagnostics.html, validation.html
+css/site.css                     shared styles
+js/aortic-model.js               shared engine: tables -> median, sigma, lambda -> z and cutoffs
+js/<page>.js                     one script per page
+models/root_bccg.json / .js      exported model tables (the .js wrapper is what the pages load)
+models/diagnostics.json / .js    aggregated diagnostics (from R/export_diagnostics.R)
+tests/root_bccg_testcases.csv / .js   reference cases for the self-test and validation page
+R/aortic_root_models.R           data preparation, cleaning, exponents, location-scale GAMs, checks
+R/export_bccg.R                  fits the BCCG models and exports the tables and test cases
+R/export_diagnostics.R           aggregated diagnostics for diagnostics.html
+R/diagnostics_qtests.R           console version of the shape comparison, Q-tests and worm plots
+R/archive/                       earlier ascending-aorta exploration (CSA/height critique, first calculator)
 ```
+
+The pages load data through classic `<script>` tags (`window.AORTIC_MODEL`, `window.AORTIC_TESTS`, `window.AORTIC_DIAG`) rather than `fetch`, so they also work when opened straight from disk.
 
 ## Reproducing the models
 
 The PHN data are **not** included in this repository. Download the Echo-Z/Normal ECG public use dataset from [pediatricheartnetwork.org](https://www.pediatricheartnetwork.org), load it in R as `echo_zscores_phn`, then run:
 
 ```r
-source("R/aortic_root_models.R")   # needs mgcv, jsonlite, ggplot2
-source("R/export_bccg.R")          # needs gamlss
-source("R/diagnostics_qtests.R")   # optional
+source("R/aortic_root_models.R")    # needs mgcv, jsonlite, ggplot2
+source("R/export_bccg.R")           # needs gamlss
+source("R/export_diagnostics.R")    # aggregated diagnostics for the web page
 ```
 
-Outputs are written to `aao_explore/`. Copy `root_bccg.json` and `root_bccg_testcases.csv` into `models/` and `tests/`.
+Outputs are written to `aao_explore/`. Copy `root_bccg.json` and `root_bccg.js` to `models/`, `root_bccg_testcases.csv` and `.js` to `tests/`, and `diagnostics.json` and `.js` to `models/`.
 
 ## Limits
 

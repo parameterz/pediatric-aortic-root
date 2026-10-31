@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Reference charts of pediatric aortic diameters by height, with a visit tracker.">
+<title>Aortic Reference Charts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/site.css">
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<div class="page">
+  <nav class="sitenav" aria-label="Pages"><a class="brand" href="index.html">Pediatric Aortic Z-Scores</a><a class="tab" href="index.html">Calculator</a><a class="tab" href="charts.html" aria-current="page">Reference charts</a><a class="tab" href="shape.html">Distribution shape</a><a class="tab" href="diagnostics.html">Diagnostics</a><a class="tab" href="validation.html">Validation</a></nav>
+  <header>
+    <div class="eyebrow">Reference charts</div>
+    <h1>Aortic diameter by height</h1>
+    <p class="lede">Growth-chart style curves for each level of the aorta, with the z-score bands used by the calculator. Add a child's visits to follow them over time.</p>
+  </header>
+
+  <section class="panel">
+    <div class="controls" style="margin-bottom:12px">
+      <div class="tabs" id="level-tabs" role="group" aria-label="Level">
+        <button type="button" data-k="SOV" aria-pressed="false"><span class="dot" style="background:var(--c-sov)"></span>Sinuses</button>
+        <button type="button" data-k="STJ" aria-pressed="false"><span class="dot" style="background:var(--c-stj)"></span>ST junction</button>
+        <button type="button" data-k="AAO" aria-pressed="true"><span class="dot" style="background:var(--c-aao)"></span>Ascending</button>
+      </div>
+      <div class="tabs" id="sex-tabs" role="group" aria-label="Sex">
+        <button type="button" data-m="0" aria-pressed="false">Girls</button>
+        <button type="button" data-m="1" aria-pressed="true">Boys</button>
+      </div>
+    </div>
+    <h2 id="chart-title" style="margin:0 0 6px"></h2>
+    <div class="chart"><svg id="chart" viewBox="0 0 760 440" role="img" aria-label="Reference curves of aortic diameter by height, with the child's visits"></svg></div>
+    <p class="scale-cap" style="margin:8px 0 0">Curves show the median and z = −2, +2, +3.5 and +5 for a child of typical build (height-and-sex model). Shading follows the calculator's bands. Hover the chart to read values at any height.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Visits</h2>
+    <div class="example-note" id="example-note" style="margin-bottom:12px">Example visits are shown: a boy followed from 6 to 10 years. Edit them, clear them, or add your own. Entries stay in this browser only.</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Age (y)</th><th>Height (cm)</th><th>Weight (kg)</th><th>SOV (mm)</th><th>STJ (mm)</th><th>AAo (mm)</th><th></th></tr></thead>
+        <tbody id="visit-in"></tbody>
+      </table>
+    </div>
+    <div class="controls" style="margin-top:12px">
+      <button type="button" class="btn" id="add-visit">Add visit</button>
+      <button type="button" class="btn" id="clear-visits">Clear visits</button>
+      <button type="button" class="btn" id="load-example">Load the example</button>
+    </div>
+    <h3 style="margin:18px 0 6px">Results by visit</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th rowspan="2">#</th><th rowspan="2" class="num">Age</th><th colspan="2">Sinuses</th><th colspan="2">ST junction</th><th colspan="2">Ascending</th><th rowspan="2">Model</th></tr>
+          <tr><th class="num">z</th><th class="num">% exp.</th><th class="num">z</th><th class="num">% exp.</th><th class="num">z</th><th class="num">% exp.</th></tr>
+        </thead>
+        <tbody id="visit-out"></tbody>
+      </table>
+    </div>
+    <p class="sub" style="margin:10px 0 0">Results use the sex selected above. When a weight is entered, z and percent of expected come from the full model (height, weight for height, age and sex), so a point can sit slightly differently from the typical-build curves. Percent of expected is the steadier number to follow when a diameter is far outside the normal range.</p>
+  </section>
+
+  <details class="panel">
+    <summary>Table of curve values</summary>
+    <div class="details-body">
+      <p class="sub" id="curve-cap"></p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th class="num">Height (cm)</th><th class="num">z −2</th><th class="num">Median</th><th class="num">z +2</th><th class="num">z +3.5</th><th class="num">z +5</th></tr></thead>
+          <tbody id="curve-tab"></tbody>
+        </table>
+      </div>
+    </div>
+  </details>
+  <div class="tip" id="tip" hidden></div>
+  <footer>
+    <p>The NIH/NHLBI Pediatric Heart Network Echo-Z/Normal ECG dataset was used in preparation of this work. Data were downloaded from www.pediatricheartnetwork.org on 01/01/2026.</p>
+    <p>This site is an independent analysis and is not a product of the Pediatric Heart Network. Calculations run in your browser; nothing you enter is sent anywhere.</p>
+  </footer>
+</div>
+<style>
+.cell { width: 100%; min-width: 64px; font: 15px var(--font-num); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+.cell:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+</style>
+<script src="models/root_bccg.js"></script>
+<script src="tests/root_bccg_testcases.js"></script>
+<script src="js/aortic-model.js"></script>
+<script src="js/charts.js"></script>
+</body>
+</html>

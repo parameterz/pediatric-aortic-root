@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Residual, Q-test, worm-plot and shape diagnostics for the pediatric aortic z-score models.">
+<title>Model Diagnostics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/site.css">
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<div class="page">
+  <nav class="sitenav" aria-label="Pages"><a class="brand" href="index.html">Pediatric Aortic Z-Scores</a><a class="tab" href="index.html">Calculator</a><a class="tab" href="charts.html">Reference charts</a><a class="tab" href="shape.html">Distribution shape</a><a class="tab" href="diagnostics.html" aria-current="page">Diagnostics</a><a class="tab" href="validation.html">Validation</a></nav>
+  <header>
+    <div class="eyebrow">Diagnostics</div>
+    <h1>How well the models fit</h1>
+    <p class="lede">A z-score is only trustworthy if, in healthy children, it behaves like a standard normal variable at every size. These checks show whether the median, spread and shape of each model hold up across height, age and build.</p>
+  </header>
+
+  <section class="panel" id="missing" hidden>
+    <h2>Diagnostics file not found</h2>
+    <p class="prose">This page reads <span class="mono">models/diagnostics.js</span>, written by <span class="mono">R/export_diagnostics.R</span>. Run that script after <span class="mono">R/aortic_root_models.R</span> and copy its output into <span class="mono">models/</span>.</p>
+  </section>
+
+  <div id="content" style="display:grid;gap:24px">
+    <section class="panel prose">
+      <h2>About these summaries</h2>
+      <p>Every chart on this page is drawn from group summaries: bins of about 160 children, fixed percentiles, histogram counts and test statistics. No individual records are published; the PHN data can be downloaded from the network to reproduce them. Diagnostics generated <span id="diag-date" class="mono">—</span>.</p>
+    </section>
+
+    <div class="tabs" id="level-tabs" role="group" aria-label="Level">
+      <button type="button" data-k="SOV" aria-pressed="false"><span class="dot" style="background:var(--c-sov)"></span>Sinuses</button>
+      <button type="button" data-k="STJ" aria-pressed="false"><span class="dot" style="background:var(--c-stj)"></span>ST junction</button>
+      <button type="button" data-k="AAO" aria-pressed="true"><span class="dot" style="background:var(--c-aao)"></span>Ascending</button>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><div class="k">Children</div><div class="v" id="s-n">—</div></div>
+      <div class="stat"><div class="k">Shape λ</div><div class="v" id="s-lam">—</div></div>
+      <div class="stat"><div class="k">Skewness of z</div><div class="v" id="s-skew">—</div></div>
+      <div class="stat"><div class="k">Excess kurtosis</div><div class="v" id="s-kurt">—</div></div>
+      <div class="stat"><div class="k">Beyond +2 / −2</div><div class="v" id="s-tails">—</div></div>
+      <div class="stat"><div class="k">Shapiro-Wilk</div><div class="v" id="s-sw">—</div></div>
+    </div>
+
+    <section class="panel">
+      <h2>z-scores against body size: <span class="lvl-name"></span></h2>
+      <p class="sub" style="margin:0 0 12px;max-width:80ch">Each panel splits the reference children into 20 groups along one variable. Shading shows the middle 50% and 80% of z in each group, dots the group mean, and the dark line a smoothed trend with ±2 SE. For a well-fitting model the trend stays near 0 and the shading stays level. Hover a group for its numbers.</p>
+      <div class="minis" id="resid"></div>
+      <h3 style="margin:16px 0 6px">By sex</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Sex</th><th class="num">Children</th><th class="num">Mean z</th><th class="num">± 2 SE</th><th class="num">SD</th><th class="num">Above +2</th><th class="num">Below −2</th></tr></thead>
+          <tbody id="sex-tab"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Q-tests by height group: <span class="lvl-name"></span></h2>
+      <p class="sub" style="margin:0 0 12px;max-width:80ch">Royston–Wright tests, the standard check for growth references. Within each height group, Z1 tests the mean (median model), Z2 the variance (σ), Z3 the skewness (λ) and Z4 the kurtosis. Values beyond ±2 are highlighted, as are overall p-values below 0.05. The Z1 test subtracts the degrees of freedom of the whole median model, including the weight-for-height and age terms, so its p-value is conservative.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Height group</th><th class="num">Z1 mean</th><th class="num">Z2 variance</th><th class="num">Z3 skewness</th><th class="num">Z4 kurtosis</th><th class="num">Children</th></tr></thead>
+          <tbody id="q-tab"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Distribution of z: <span class="lvl-name"></span></h2>
+      <div class="minis" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
+        <figure class="mini"><svg id="qq" role="img" aria-label="Normal Q-Q plot of z"></svg><figcaption>Q-Q plot at fixed percentiles: points on the dashed line mean z follows a normal distribution.</figcaption></figure>
+        <figure class="mini"><svg id="hist" role="img" aria-label="Histogram of z with the normal curve"></svg><figcaption>Histogram of z with the expected normal curve.</figcaption></figure>
+      </div>
+      <h3 style="margin:16px 0 6px">Tail rates</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th class="num">Cutoff</th><th class="num">Expected each side</th><th class="num">Observed above</th><th class="num">Observed below</th><th class="num">Children: expected / above / below</th></tr></thead>
+          <tbody id="tail-tab"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Worm plots by height group: <span class="lvl-name"></span></h2>
+      <p class="sub" style="margin:0 0 12px;max-width:80ch">A worm plot is a Q-Q plot with the diagonal removed, drawn separately for six height groups. A flat worm inside the grey band means the median, spread and shape are all right for children of that size. A worm that tilts suggests the spread is off; a U or S shape suggests skewness or tail weight. Points outside the band are marked in red.</p>
+      <div class="minis" id="worm"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Shape comparison</h2>
+      <p class="sub" style="margin:0 0 12px;max-width:80ch">Difference in AIC from the fitted model (lower is better; a difference above about 10 is meaningful). Fixing λ at 0, 1 or 2 forces log-normal, normal or area-scale tails. BCT adds a parameter for tail weight.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Level</th><th class="num">Fitted λ</th><th class="num">Fitted</th><th class="num">λ = 0</th><th class="num">λ = 1</th><th class="num">λ = 2</th><th class="num">BCT</th></tr></thead>
+          <tbody id="aic-tab"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>How diameter scales with height</h2>
+      <p class="sub" style="margin:0 0 12px;max-width:80ch">The local height exponent, d ln(diameter) / d ln(height), from a smooth fit, with ±2 SE bands. An exponent of 1 means the aorta grows in proportion to height; adult data are often closer to 0.5. A single fixed ratio index assumes one exponent at every size.</p>
+      <div class="chart"><svg id="expo" role="img" aria-label="Local height exponent by height for the three levels"></svg></div>
+    </section>
+  </div>
+  <div class="tip" id="tip" hidden></div>
+  <footer>
+    <p>The NIH/NHLBI Pediatric Heart Network Echo-Z/Normal ECG dataset was used in preparation of this work. Data were downloaded from www.pediatricheartnetwork.org on 01/01/2026.</p>
+    <p>This site is an independent analysis and is not a product of the Pediatric Heart Network. Calculations run in your browser; nothing you enter is sent anywhere.</p>
+  </footer>
+</div>
+<style>
+.minis { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+figure.mini { margin: 0; min-width: 0; }
+figure.mini svg { width: 100%; height: auto; display: block; }
+figure.mini figcaption { font-size: 13px; color: var(--muted); margin-top: 2px; }
+#expo { width: 100%; height: auto; display: block; }
+</style>
+<script src="models/root_bccg.js"></script>
+<script src="tests/root_bccg_testcases.js"></script>
+<script src="js/aortic-model.js"></script>
+<script src="models/diagnostics.js"></script>
+<script src="js/diagnostics.js"></script>
+</body>
+</html>

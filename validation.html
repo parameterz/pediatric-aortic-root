@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Reference cases comparing the browser z-scores with the R models.">
+<title>Validation Cases</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/site.css">
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<div class="page">
+  <nav class="sitenav" aria-label="Pages"><a class="brand" href="index.html">Pediatric Aortic Z-Scores</a><a class="tab" href="index.html">Calculator</a><a class="tab" href="charts.html">Reference charts</a><a class="tab" href="shape.html">Distribution shape</a><a class="tab" href="diagnostics.html">Diagnostics</a><a class="tab" href="validation.html" aria-current="page">Validation</a></nav>
+  <header>
+    <div class="eyebrow">Validation</div>
+    <h1>Reference cases</h1>
+    <p class="lede">The calculator's z-scores come from lookup tables exported from the R models. This page recomputes a set of reference children in your browser and compares every value with R.</p>
+  </header>
+
+  <div class="stat-row">
+    <div class="stat"><div class="k">Children</div><div class="v" id="s-n">—</div></div>
+    <div class="stat"><div class="k">z-scores checked</div><div class="v" id="s-z">—</div></div>
+    <div class="stat"><div class="k">Largest difference</div><div class="v" id="s-max">—</div></div>
+    <div class="stat"><div class="k">Status</div><div class="v"><span id="s-status" class="pill">—</span></div></div>
+  </div>
+
+  <section class="panel prose">
+    <h2>How the check works</h2>
+    <p>Ten children were drawn at random (fixed seed) from the reference group for each level of the aorta. For each child, R computed two z-scores: one from the full model (height, weight for height, age and sex) and one from the height-and-sex model used when weight is missing. Those R values come from the exported tables, which were themselves checked against the gamlss fit to within 0.0001.</p>
+    <p>This page loads the same tables, recomputes all of those z-scores with the calculator's own code, and compares them. A difference under 0.001 counts as a match. The largest difference is on the order of 0.0001, from interpolating between table points and from rounding the R values to four decimals. Model tables dated <span id="s-date" class="mono">—</span>.</p>
+  </section>
+
+  <section class="panel">
+    <div class="controls" style="justify-content:space-between;margin-bottom:12px">
+      <h2 style="margin:0">Cases</h2>
+      <div class="tabs" id="filter" role="group" aria-label="Filter by level">
+        <button type="button" data-k="ALL" aria-pressed="true">All</button>
+        <button type="button" data-k="SOV" aria-pressed="false">Sinuses</button>
+        <button type="button" data-k="STJ" aria-pressed="false">ST junction</button>
+        <button type="button" data-k="AAO" aria-pressed="false">Ascending</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Level</th><th>Sex</th><th class="num">Age (y)</th><th class="num">Height (cm)</th><th class="num">Weight (kg)</th><th class="num">D (mm)</th>
+              <th class="num">z full, R</th><th class="num">Browser</th><th class="num">Δ</th>
+              <th class="num">z ht+sex, R</th><th class="num">Browser</th><th class="num">Δ</th><th></th></tr>
+        </thead>
+        <tbody id="cases"></tbody>
+      </table>
+    </div>
+    <p class="sub" style="margin:12px 0 0">The test cases are in <span class="mono">tests/root_bccg_testcases.csv</span>; the R script that made them is <span class="mono">R/export_bccg.R</span>.</p>
+  </section>
+  <footer>
+    <p>The NIH/NHLBI Pediatric Heart Network Echo-Z/Normal ECG dataset was used in preparation of this work. Data were downloaded from www.pediatricheartnetwork.org on 01/01/2026.</p>
+    <p>This site is an independent analysis and is not a product of the Pediatric Heart Network. Calculations run in your browser; nothing you enter is sent anywhere.</p>
+  </footer>
+</div>
+<script src="models/root_bccg.js"></script>
+<script src="tests/root_bccg_testcases.js"></script>
+<script src="js/aortic-model.js"></script>
+<script src="js/validation.js"></script>
+</body>
+</html>

@@ -95,3 +95,10 @@ tc <- do.call(rbind, tcs)
 write.csv(tc, file.path(out_dir, "root_bccg_testcases.csv"), row.names = FALSE)
 cat("\nWrote root_bccg.json (", file.size(file.path(out_dir, "root_bccg.json")), " bytes) and ",
     nrow(tc), " test cases.\n", sep = "")
+
+# JavaScript wrappers used by the web pages (classic scripts, so pages also open straight from disk)
+writeLines(paste0("window.AORTIC_MODEL = ", toJSON(model_json, auto_unbox = TRUE, digits = 8), ";"),
+           file.path(out_dir, "root_bccg.js"))
+writeLines(paste0("window.AORTIC_TESTS = ", toJSON(tc, dataframe = "rows", digits = 8), ";"),
+           file.path(out_dir, "root_bccg_testcases.js"))
+cat("Copy root_bccg.json and root_bccg.js to models/, and root_bccg_testcases.csv/.js to tests/.\n")
