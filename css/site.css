@@ -195,3 +195,10 @@ footer p { margin: 0; }
 
 .site-credit { color: var(--ink); }
 .site-credit a { color: var(--focus); }
+
+/* ---- unit toggle (cm/in, kg/lb) ---- */
+.unit-btn { font: 13px var(--font-num); color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 5px; padding: 2px 8px; margin-right: 8px; cursor: pointer; }
+.unit-btn:hover { color: var(--ink); border-color: var(--muted); }
+.unit-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+th .unit-btn { margin: 0 0 0 4px; font-size: 11px; padding: 1px 6px; text-transform: none; letter-spacing: 0; }
+.unit-alt { min-height: 1em; }

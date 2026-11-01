@@ -9,7 +9,7 @@
   const num = (id) => { const v = parseFloat(String($(id).value).replace(",", ".")); return isFinite(v) ? v : NaN; };
 
   function child() {
-    const p = { ht: num("ht"), wt: num("wt"), age: num("age"), male: $("sex-m").checked };
+    const p = { ht: AorticModel.toMetric("ht", num("ht")), wt: AorticModel.toMetric("wt", num("wt")), age: num("age"), male: $("sex-m").checked };
     const ok = p.ht > 0 && p.age >= 0;
     return { p, ok, hasWt: p.wt > 0 };
   }
@@ -151,5 +151,7 @@
   }));
   $("f").addEventListener("input", (e) => { if (e.target.id !== "lam") update(); });
   $("f").addEventListener("submit", (e) => e.preventDefault());
+  AorticModel.bindUnitField("ht", "ht", update);
+  AorticModel.bindUnitField("wt", "wt", update);
   update();
 })();

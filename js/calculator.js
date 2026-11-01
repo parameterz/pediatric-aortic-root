@@ -17,7 +17,7 @@
   }
   function read() {
     const d = {}; KEYS.forEach((k) => (d[k] = num("d-" + k)));
-    return { d, ht: num("ht"), wt: num("wt"), age: readAge(), male: $("sex-m").checked };
+    return { d, ht: AorticModel.toMetric("ht", num("ht")), wt: AorticModel.toMetric("wt", num("wt")), age: readAge(), male: $("sex-m").checked };
   }
 
   // ---------- drawing ----------
@@ -196,6 +196,7 @@
     if (ready) {
       if (p.ht < R.height_cm[0] || p.ht > R.height_cm[1]) flags.push(`Height is outside the reference range (${R.height_cm[0]} to ${R.height_cm[1]} cm), so results are extrapolations.`);
       if (p.age > R.age[1]) flags.push("Age is above 18 years, the upper limit of the reference group.");
+      const ageMsg = AorticModel.ageCheck(p); if (ageMsg) flags.push(ageMsg);
       if (hasWt) { const w = wfhOf(p.ht, p.wt); if (w < R.wfh[0] || w > R.wfh[1]) flags.push("Weight for height is outside the reference range. Check the height and weight; results are extrapolations."); }
       KEYS.forEach((k) => { const v = p.d[k]; if (v > 0 && (v < 3 || v > 60)) flags.push(`The ${INFO[k].name.toLowerCase()} value looks unusual for millimetres. Check the units.`); });
       $("modelline").textContent = "Model: " + (hasWt ? "height, weight for height, age and sex." : "height and sex (enter a weight for the full model).");
@@ -260,5 +261,7 @@
   const a = document.createElement("a"); a.href = "validation.html"; a.textContent = "See every case";
   st.append(b, document.createTextNode(` (${res.n} children, full and height-and-sex versions; largest difference in z: ${res.maxd.toExponential(1)}). `), a, document.createTextNode("."));
 
+  AorticModel.bindUnitField("ht", "ht", update);
+  AorticModel.bindUnitField("wt", "wt", update);
   update();
 })();

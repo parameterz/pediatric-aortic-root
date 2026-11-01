@@ -23,7 +23,9 @@
   if (!visits) visits = EXAMPLE.map((v) => Object.assign({}, v));
   const save = () => { try { localStorage.setItem(STORE, JSON.stringify(visits)); } catch (e) { /* ignore */ } };
 
-  const FIELDS = [["age", "Age (y)"], ["ht", "Height (cm)"], ["wt", "Weight (kg)"], ["SOV", "SOV (mm)"], ["STJ", "STJ (mm)"], ["AAO", "AAo (mm)"]];
+  const FIELDS = [["age", "Age (y)"], ["ht", "Height"], ["wt", "Weight"], ["SOV", "SOV (mm)"], ["STJ", "STJ (mm)"], ["AAO", "AAo (mm)"]];
+  const U = AorticModel;
+  const shown = (k, v) => { const x = num(v); if (!isFinite(x)) return ""; return k === "ht" || k === "wt" ? +U.fromMetric(k, x).toFixed(1) : v; };
   const num = (v) => { const x = parseFloat(String(v == null ? "" : v).replace(",", ".")); return isFinite(x) ? x : NaN; };
 
   function renderVisitInputs() {
@@ -31,7 +33,7 @@
     visits.forEach((v, i) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `<td class="num sub">${i + 1}</td>` + FIELDS.map(([k, lab]) =>
-        `<td><input class="cell" id="v${i}-${k}" data-i="${i}" data-k="${k}" inputmode="decimal" autocomplete="off" aria-label="Visit ${i + 1} ${lab}" value="${isFinite(num(v[k])) ? v[k] : ""}"></td>`).join("") +
+        `<td><input class="cell" id="v${i}-${k}" data-i="${i}" data-k="${k}" inputmode="decimal" autocomplete="off" aria-label="Visit ${i + 1} ${lab}${k === "ht" || k === "wt" ? " in " + U.units[k] : ""}" value="${shown(k, v[k])}"></td>`).join("") +
         `<td><button type="button" class="btn" data-del="${i}" aria-label="Remove visit ${i + 1}">Remove</button></td>`;
       tb.appendChild(tr);
     });
@@ -39,7 +41,8 @@
   }
   $("visit-in").addEventListener("input", (e) => {
     const t = e.target; if (!t.dataset.k) return;
-    visits[+t.dataset.i][t.dataset.k] = t.value; isExample = false; $("example-note").hidden = true; save(); refresh();
+    const k = t.dataset.k, x = num(t.value);
+    visits[+t.dataset.i][k] = (k === "ht" || k === "wt") && isFinite(x) ? +U.toMetric(k, x).toFixed(2) : t.value; isExample = false; $("example-note").hidden = true; save(); refresh();
   });
   $("visit-in").addEventListener("click", (e) => {
     const i = e.target.dataset.del; if (i == null) return;
@@ -75,7 +78,8 @@
         const [cls] = category(L.z);
         html += `<td class="num"><span class="chip ${cls}" style="font-size:12px;padding:1px 7px">${fmtZ(L.z)}</span></td><td class="num">${Math.round(L.pct)}%</td>`;
       });
-      html += `<td class="sub">${v.ok ? (v.hasWt ? "Full" : "Height + sex") : "Needs age and height"}</td>`;
+      const ageMsg = v.ok ? U.ageCheck(v.p) : null;
+      html += `<td class="sub">${v.ok ? (v.hasWt ? "Full" : "Height + sex") : "Needs age and height"}${ageMsg ? ` · <span class="chip mild" style="font-size:12px;padding:1px 7px" title="${ageMsg.replace(/"/g, "&quot;")}">Check age</span>` : ""}</td>`;
       tr.innerHTML = html; tb.appendChild(tr);
     });
   }
@@ -187,6 +191,14 @@
     const res = visitResults();
     draw(res); renderVisitResults(res); renderTable();
   }
+  function paintUnits() {
+    [["vh-unit", "ht", "Height"], ["vw-unit", "wt", "Weight"]].forEach(([id, k, name]) => {
+      const b = $(id), next = U.units[k] === (k === "ht" ? "cm" : "kg") ? (k === "ht" ? "in" : "lb") : (k === "ht" ? "cm" : "kg");
+      b.textContent = U.units[k]; b.title = `Switch to ${next}`; b.setAttribute("aria-label", `${name} in ${U.units[k]}. Switch to ${next}`);
+      b.onclick = () => { U.setUnit(k, next); paintUnits(); renderVisitInputs(); };
+    });
+  }
+  paintUnits();
   renderVisitInputs();
   refresh();
   let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => draw(visitResults()), 150); });
