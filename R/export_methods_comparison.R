@@ -33,7 +33,7 @@
 library(gamlss)
 library(jsonlite)
 
-ls_file <- "zscorecalculator.r"          # path to the Lauzon-Schnittka authors' script
+if (!exists("ls_file")) ls_file <- "zscorecalculator.r"   # path to the Lauzon-Schnittka authors' script
 k_folds <- 10
 set.seed(20260101)
 

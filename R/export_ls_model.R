@@ -18,7 +18,7 @@
 
 library(jsonlite)
 
-ls_file <- "zscorecalculator.r"           # path to the authors' script
+if (!exists("ls_file")) ls_file <- "zscorecalculator.r"   # path to the authors' script (set before sourcing to override)
 if (!exists("out_dir")) out_dir <- "aao_explore"
 dir.create(out_dir, showWarnings = FALSE)
 
