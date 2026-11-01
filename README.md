@@ -2,7 +2,7 @@
 
 *An analysis of the Pediatric Heart Network public database*
 
-A browser-based z-score calculator for the **sinuses of Valsalva**, **sinotubular junction** and **ascending aorta** in children, built from the NIH/NHLBI Pediatric Heart Network (PHN) Echo-Z normal echocardiogram dataset (about 3,200 healthy, non-obese children from birth to 18 years).
+Z-scores for the **sinuses of Valsalva**, **sinotubular junction** and **ascending aorta** in children, from a model of about 3,200 healthy children in the NIH/NHLBI Pediatric Heart Network (PHN) Echo-Z public database, adjusted for height, build, age and sex, with side-by-side comparison to published pediatric references, including PHN, Mahgerefteh and Lauzon-Schnittka.
 
 **Site:** enable GitHub Pages for this repository, or open `index.html` directly from disk.
 
