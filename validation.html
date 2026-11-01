@@ -56,11 +56,11 @@
     <p class="sub" style="margin:12px 0 0">The test cases are in <span class="mono">tests/root_bccg_testcases.csv</span>; the R script that made them is <span class="mono">R/export_bccg.R</span>.</p>
   </section>  <section class="panel" id="ls-sec" hidden>
     <h2>Lauzon-Schnittka implementation</h2>
-    <p class="sub prose" style="margin:0 0 12px">The comparison table also shows Lauzon-Schnittka z-scores. To check that implementation, the authors' own Excel calculator was recalculated (in LibreOffice) for 20 children across ages, builds and both sexes, and those values are compared here with the browser. <span id="ls-sum"></span></p>
+    <p class="sub prose" style="margin:0 0 12px">The comparison table also shows Lauzon-Schnittka z-scores. The browser code is a port of the authors' own R function, <code>z_score()</code>, and its coefficients, spline knots and WHO BMI tables are read out of that function by <code>R/export_ls_model.R</code>. The same script runs <code>z_score()</code> on 44 children across ages (1 day to 18.9 years), builds (very lean to BMIz beyond +5) and both sexes; those values are compared here with the browser, together with the median and the z = +2 diameter found by inverting <code>z_score()</code> in R. <span id="ls-sum"></span></p>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Sex</th><th class="num">Age (y)</th><th class="num">Height (cm)</th><th class="num">Weight (kg)</th><th class="num">BMIz, Excel</th><th class="num">Browser</th>
-          <th class="num">SOV z, Excel</th><th class="num">Browser</th><th class="num">STJ z, Excel</th><th class="num">Browser</th><th class="num">AAo z, Excel</th><th class="num">Browser</th></tr></thead>
+        <thead><tr><th>Sex</th><th class="num">Age (y)</th><th class="num">Height (cm)</th><th class="num">Weight (kg)</th><th class="num">BMIz, R</th><th class="num">Browser</th>
+          <th class="num">SOV z, R</th><th class="num">Browser</th><th class="num">STJ z, R</th><th class="num">Browser</th><th class="num">AAo z, R</th><th class="num">Browser</th></tr></thead>
         <tbody id="ls-cases"></tbody>
       </table>
     </div>

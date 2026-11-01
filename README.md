@@ -78,8 +78,9 @@ R/export_bccg.R                  fits the BCCG models and exports the tables and
 R/export_diagnostics.R           aggregated diagnostics for diagnostics.html
 R/export_age_height.R            height-for-age reference used to flag an implausible age (e.g., months entered as years)
 models/age_height.json / .js     output of export_age_height.R
-models/lauzon_schnittka.js       Lauzon-Schnittka 2025 coefficients, spline tables and WHO BMI-for-age LMS tables, from the authors' published Excel calculator
-js/lauzon-schnittka.js           their z-score formulas; checked against the workbook (tests/ls_reference_cases.js)
+R/export_ls_model.R              reads the Lauzon-Schnittka 2025 model out of the authors' R function z_score() and runs it on reference cases
+models/lauzon_schnittka.js       its output: coefficients, B-spline knots and weights, WHO BMI-for-age LMS vectors
+js/lauzon-schnittka.js           line-by-line port of z_score(); checked against R (tests/ls_reference_cases.js)
 R/diagnostics_qtests.R           console version of the shape comparison, Q-tests and worm plots
 R/archive/                       earlier ascending-aorta exploration (CSA/height critique, first calculator)
 ```
@@ -95,9 +96,10 @@ source("R/aortic_root_models.R")    # needs mgcv, jsonlite, ggplot2
 source("R/export_bccg.R")           # needs gamlss
 source("R/export_diagnostics.R")    # aggregated diagnostics for the web page
 source("R/export_age_height.R")     # height-for-age curves for the age check
+source("R/export_ls_model.R")       # Lauzon-Schnittka model from the authors' zscorecalculator.r (set ls_file); no PHN data needed
 ```
 
-Outputs are written to `aao_explore/`. Copy `root_bccg.json` and `root_bccg.js` to `models/`, `root_bccg_testcases.csv` and `.js` to `tests/`, and `diagnostics.json`/`.js` and `age_height.json`/`.js` to `models/`.
+Outputs are written to `aao_explore/`. Copy `root_bccg.json` and `root_bccg.js` to `models/`, `root_bccg_testcases.csv` and `.js` to `tests/`, and `diagnostics.json`/`.js`, `age_height.json`/`.js` and `lauzon_schnittka.json`/`.js` to `models/`, and `ls_reference_cases.js` to `tests/`. The authors' `zscorecalculator.r` is not included here; it is distributed by them with the paper.
 
 Height and weight can be entered in cm/kg or in/lb (the small unit button inside each field); the choice is remembered in the browser, and all calculations use cm and kg.
 

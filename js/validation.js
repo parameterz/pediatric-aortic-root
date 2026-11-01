@@ -43,7 +43,7 @@
   if (window.LauzonSchnittka && window.LS_TESTS) {
     const ls = LauzonSchnittka.selfTest();
     $("ls-sec").hidden = false;
-    $("ls-sum").innerHTML = `<span class="pill ${ls.pass ? "ok" : "bad"}">${ls.pass ? "All match" : "Mismatch"}</span> ${3 * ls.n} z-scores and ${ls.n} BMI z-scores; largest difference ${Math.max(ls.maxd, ls.maxb).toExponential(1)}.`;
+    $("ls-sum").innerHTML = `<span class="pill ${ls.pass ? "ok" : "bad"}">${ls.pass ? "All match" : "Mismatch"}</span> ${3 * ls.n} z-scores, ${ls.n} BMI z-scores and ${6 * ls.n} diameters (median and z = +2); largest difference ${Math.max(ls.maxd, ls.maxb, ls.maxmm).toExponential(1)}.`;
     const z3 = (z) => (z >= 0 ? "+" : "−") + Math.abs(z).toFixed(3);
     ls.rows.forEach(({ t, z, bmiz }) => {
       const tr = document.createElement("tr");

@@ -89,6 +89,7 @@
       const r = hasWt ? LauzonSchnittka.ref(key, p) : null;
       if (!hasWt) na("Lauzon-Schnittka", src, "needs weight");
       else if (r) add("Lauzon-Schnittka", src + `; this child's BMIz ${fmtZ(r.bmiz)}`, LauzonSchnittka.z(dMm, r), LauzonSchnittka.dAt(r, 2));
+      else na("Lauzon-Schnittka", src, "published to 19 y");
     }
     if (CSA[key]) {
       const c = CSA[key];

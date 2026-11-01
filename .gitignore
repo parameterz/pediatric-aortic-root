@@ -16,3 +16,6 @@ aao_explore/
 # OS clutter
 .DS_Store
 Thumbs.db
+
+# Lauzon-Schnittka authors' R script (distributed by them; not redistributed here)
+zscorecalculator.r
