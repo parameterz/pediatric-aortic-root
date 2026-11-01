@@ -72,9 +72,20 @@
       host.appendChild(fig);
       const x0 = Math.min(...b.xlo), x1 = Math.max(...b.xhi);
       const P = panel(svg, { x0, x1, y0: -3, y1: 3, yt: [-3, -2, -1, 0, 1, 2, 3], ylab: "z", yfmt: (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v) });
-      const xs = b.x.map(P.X);
-      svg.appendChild(area(xs.map((x, i) => [x, P.Y(b.q90[i])]), xs.map((x, i) => [x, P.Y(b.q10[i])]), `fill:${color()};opacity:.14`));
-      svg.appendChild(area(xs.map((x, i) => [x, P.Y(b.q75[i])]), xs.map((x, i) => [x, P.Y(b.q25[i])]), `fill:${color()};opacity:.22`));
+      // each group drawn as a block over its actual range (lightest to heaviest child, etc.)
+      const step = (hi, lo) => {
+        const top = [], bot = [];
+        b.x.forEach((_, i) => {
+          const xa = P.X(i ? (b.xhi[i - 1] + b.xlo[i]) / 2 : b.xlo[i]);
+          const xb = P.X(i < b.x.length - 1 ? (b.xhi[i] + b.xlo[i + 1]) / 2 : b.xhi[i]);
+          top.push([xa, P.Y(hi[i])], [xb, P.Y(hi[i])]); bot.push([xa, P.Y(lo[i])], [xb, P.Y(lo[i])]);
+        });
+        return [top, bot];
+      };
+      let [tp, bt] = step(b.q90, b.q10);
+      svg.appendChild(area(tp, bt, `fill:${color()};opacity:.14`));
+      [tp, bt] = step(b.q75, b.q25);
+      svg.appendChild(area(tp, bt, `fill:${color()};opacity:.22`));
       [-2, 2].forEach((z) => svg.appendChild(el("line", { x1: P.m.l, x2: P.W - P.m.r, y1: P.Y(z), y2: P.Y(z), style: "stroke:var(--muted);stroke-dasharray:3 3" })));
       svg.appendChild(el("line", { x1: P.m.l, x2: P.W - P.m.r, y1: P.Y(0), y2: P.Y(0), style: "stroke:var(--muted)" }));
       const tx = t.x.map(P.X);
