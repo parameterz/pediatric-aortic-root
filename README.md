@@ -25,7 +25,7 @@ For each level of the aorta:
 - **percent of expected** (100 × measured ÷ predicted median), which does not depend on the tail model and is the steadier number for severe dilation
 - a note when |z| > 4, where almost no reference children exist and any z-score is an extrapolation
 - a **weight-for-height** panel showing how build changes the expected diameter
-- a collapsible **comparison** with other methods: the PHN BSA z-score (Lopez 2017), height and BSA indices (Mahgerefteh 2021), and CSA/height (Chaudhary 2026)
+- a collapsible **comparison** with other methods: the PHN BSA z-score (Lopez 2017), height and BSA indices (Mahgerefteh 2021), Lauzon-Schnittka (2025; height, weight, WHO BMI-for-age z and age, from a large clinical cohort that includes overweight and obese children), and CSA/height (Chaudhary 2026)
 
 ## The model
 
@@ -78,6 +78,8 @@ R/export_bccg.R                  fits the BCCG models and exports the tables and
 R/export_diagnostics.R           aggregated diagnostics for diagnostics.html
 R/export_age_height.R            height-for-age reference used to flag an implausible age (e.g., months entered as years)
 models/age_height.json / .js     output of export_age_height.R
+models/lauzon_schnittka.js       Lauzon-Schnittka 2025 coefficients, spline tables and WHO BMI-for-age LMS tables, from the authors' published Excel calculator
+js/lauzon-schnittka.js           their z-score formulas; checked against the workbook (tests/ls_reference_cases.js)
 R/diagnostics_qtests.R           console version of the shape comparison, Q-tests and worm plots
 R/archive/                       earlier ascending-aorta exploration (CSA/height critique, first calculator)
 ```
@@ -119,6 +121,7 @@ This is an independent analysis and is not a product of the Pediatric Heart Netw
 - Chaudhary AA, et al. Pediatr Cardiol. 2026. doi:10.1007/s00246-026-04525-4
 - Cole TJ, Green PJ. Stat Med. 1992;11:1305–1319 (the LMS method)
 - Rigby RA, Stasinopoulos DM. J R Stat Soc C. 2005;54:507–554 (GAMLSS)
+- Lauzon-Schnittka J, et al. Circ Cardiovasc Imaging. 2025;18:e017944. doi:10.1161/CIRCIMAGING.124.017944
 - Herrera-Leaño N, et al. J Am Heart Assoc. 2026;15:e050142 (SEAMLSS)
 - Morris SA, et al. Circulation. 2024 (AHA scientific statement on aortopathy in children)
 
