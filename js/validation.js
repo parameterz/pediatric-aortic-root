@@ -38,4 +38,19 @@
     render();
   }));
   render();
+
+  // ---------- Lauzon-Schnittka check ----------
+  if (window.LauzonSchnittka && window.LS_TESTS) {
+    const ls = LauzonSchnittka.selfTest();
+    $("ls-sec").hidden = false;
+    $("ls-sum").innerHTML = `<span class="pill ${ls.pass ? "ok" : "bad"}">${ls.pass ? "All match" : "Mismatch"}</span> ${3 * ls.n} z-scores and ${ls.n} BMI z-scores; largest difference ${Math.max(ls.maxd, ls.maxb).toExponential(1)}.`;
+    const z3 = (z) => (z >= 0 ? "+" : "−") + Math.abs(z).toFixed(3);
+    ls.rows.forEach(({ t, z, bmiz }) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${t.sex === "m" ? "Male" : "Female"}</td><td class="num">${t.age_y.toFixed(2)}</td><td class="num">${t.ht}</td><td class="num">${t.wt}</td>` +
+        `<td class="num">${z3(t.bmiz)}</td><td class="num">${z3(bmiz)}</td>` +
+        ["SOV", "STJ", "AAO"].map((k) => `<td class="num">${z3(t.z[k])}</td><td class="num">${z3(z[k])}</td>`).join("");
+      $("ls-cases").appendChild(tr);
+    });
+  }
 })();

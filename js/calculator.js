@@ -84,6 +84,12 @@
       if (p.age < 2) na("Height index, ≥ 2 y", "Diameter ÷ height; " + src, "published for ≥ 2 y");
       else { const [m, s] = MAH[key].ht; add("Height index, ≥ 2 y", "Diameter ÷ height; " + src, (dcm / ht - m) / s, (m + 2 * s) * ht * 10); }
     }
+    if (window.LauzonSchnittka) {
+      const src = "Lauzon-Schnittka 2025: Canadian clinical cohort; height, weight, BMI-for-age z (WHO), age";
+      const r = hasWt ? LauzonSchnittka.ref(key, p) : null;
+      if (!hasWt) na("Lauzon-Schnittka", src, "needs weight");
+      else if (r) add("Lauzon-Schnittka", src + `; this child's BMIz ${fmtZ(r.bmiz)}`, LauzonSchnittka.z(dMm, r), LauzonSchnittka.dAt(r, 2));
+    }
     if (CSA[key]) {
       const c = CSA[key];
       const bin = c.bins.find((b) => p.age >= b.lo && p.age < b.hi) || c.bins[c.bins.length - 1];

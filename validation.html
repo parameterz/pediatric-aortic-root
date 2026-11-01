@@ -54,6 +54,16 @@
       </table>
     </div>
     <p class="sub" style="margin:12px 0 0">The test cases are in <span class="mono">tests/root_bccg_testcases.csv</span>; the R script that made them is <span class="mono">R/export_bccg.R</span>.</p>
+  </section>  <section class="panel" id="ls-sec" hidden>
+    <h2>Lauzon-Schnittka implementation</h2>
+    <p class="sub prose" style="margin:0 0 12px">The comparison table also shows Lauzon-Schnittka z-scores. To check that implementation, the authors' own Excel calculator was recalculated (in LibreOffice) for 20 children across ages, builds and both sexes, and those values are compared here with the browser. <span id="ls-sum"></span></p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Sex</th><th class="num">Age (y)</th><th class="num">Height (cm)</th><th class="num">Weight (kg)</th><th class="num">BMIz, Excel</th><th class="num">Browser</th>
+          <th class="num">SOV z, Excel</th><th class="num">Browser</th><th class="num">STJ z, Excel</th><th class="num">Browser</th><th class="num">AAo z, Excel</th><th class="num">Browser</th></tr></thead>
+        <tbody id="ls-cases"></tbody>
+      </table>
+    </div>
   </section>
   <footer>
     <p>The NIH/NHLBI Pediatric Heart Network Echo-Z/Normal ECG dataset was used in preparation of this work. Data were downloaded from www.pediatricheartnetwork.org on 01/01/2026.</p>
@@ -63,6 +73,9 @@
 <script src="models/root_bccg.js"></script>
 <script src="tests/root_bccg_testcases.js"></script>
 <script src="js/aortic-model.js"></script>
+<script src="models/lauzon_schnittka.js"></script>
+<script src="tests/ls_reference_cases.js"></script>
+<script src="js/lauzon-schnittka.js"></script>
 <script src="js/validation.js"></script>
 </body>
 </html>

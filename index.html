@@ -99,7 +99,7 @@
   <details class="panel" id="cmp">
     <summary>Compare methods</summary>
     <div class="details-body">
-      <p class="sub">The same child and measurements under other published or derived normalization methods. Each method has its own reference group and age range. The PHN z-score uses the published PHN Echo Z-Score Project table for all ages; the Mahgerefteh values were recomputed in children 2 years and older.</p>
+      <p class="sub">The same child and measurements under other published or derived normalization methods. Each method has its own reference group and age range. The PHN z-score uses the published PHN Echo Z-Score Project table for all ages; the Mahgerefteh values were recomputed in children 2 years and older. Lauzon-Schnittka comes from a large multicenter clinical cohort that included overweight and obese children; clinical measurements by many readers give a wider normal range than core-lab measurements.</p>
       <div id="cmp-body"></div>
       <p class="sub">CSA/ht = π × (diameter ÷ 2)² ÷ height (cm²/m). For the CSA/ht methods, the mean comes from the age-group table or from a regression on age and sex, and the SD always comes from the age-group table. The coefficients in the published supplement spreadsheet differ from a regression refit on the same public PHN data, so both are shown.</p>
       <p class="sub">Every method here shares one limit, as does any z-score calculator built from healthy children: almost no reference child falls beyond z ±4. Past that point, z-scores depend on assumptions about the tail rather than on data, which is why the methods diverge for a severely dilated aorta. The percent of expected does not depend on those assumptions.</p>
@@ -144,6 +144,7 @@
         <li>Chaudhary AA, Tomlinson AZ, Drant S, Jones AL. Z-score calculators for cross sectional area to height ratio of the aortic root and ascending aorta in healthy children. <em>Pediatr Cardiol</em>. 2026. <a href="https://doi.org/10.1007/s00246-026-04525-4" target="_blank" rel="noopener">doi:10.1007/s00246-026-04525-4</a><span class="why">CSA/ht age-group tables and supplement coefficients in the comparison table.</span></li>
         <li>Lopez L, Colan SD, Frommelt PC, et al. Recommendations for quantification methods during the performance of a pediatric echocardiogram. <em>J Am Soc Echocardiogr</em>. 2010;23(5):465–577. <a href="https://doi.org/10.1016/j.echo.2010.03.019" target="_blank" rel="noopener">doi:10.1016/j.echo.2010.03.019</a><span class="why">How the aortic measurements were made in the PHN core lab.</span></li>
         <li>Morris SA, et al. Cardiovascular management of aortopathy in children: a scientific statement from the American Heart Association. <em>Circulation</em>. 2024. <a href="https://pubmed.ncbi.nlm.nih.gov/39129620/" target="_blank" rel="noopener">PubMed 39129620</a><span class="why">Z-score bands for mild, moderate and severe dilation.</span></li>
+        <li>Lauzon-Schnittka J, Plante V, Dahdah N, et al. Z scores for pediatric echocardiography dimensions adjusted for body size, BMI, and age. <em>Circ Cardiovasc Imaging</em>. 2025;18:e017944. <a href="https://doi.org/10.1161/CIRCIMAGING.124.017944" target="_blank" rel="noopener">doi:10.1161/CIRCIMAGING.124.017944</a><span class="why">The Lauzon-Schnittka z-scores in the comparison table, implemented from the authors' calculator workbook, including its WHO BMI-for-age tables.</span></li>
         <li>Cole TJ, Green PJ. Smoothing reference centile curves: the LMS method and penalized likelihood. <em>Stat Med</em>. 1992;11(10):1305–1319. <a href="https://doi.org/10.1002/sim.4780111005" target="_blank" rel="noopener">doi:10.1002/sim.4780111005</a><span class="why">The LMS idea behind the median, spread and Box-Cox shape.</span></li>
         <li>Rigby RA, Stasinopoulos DM. Generalized additive models for location, scale and shape. <em>J R Stat Soc Ser C</em>. 2005;54(3):507–554. <a href="https://doi.org/10.1111/j.1467-9876.2005.00510.x" target="_blank" rel="noopener">doi:10.1111/j.1467-9876.2005.00510.x</a><span class="why">GAMLSS, the framework used to fit these models.</span></li>
         <li>Herrera-Leaño N, Malhotra A, Cooper R, et al. Allometric scaling of left heart structure and function in elite cyclists: development of sport-specific prediction equations. <em>J Am Heart Assoc</em>. 2026;15:e050142. <a href="https://doi.org/10.1161/JAHA.126.050142" target="_blank" rel="noopener">doi:10.1161/JAHA.126.050142</a><span class="why">A location, scale and shape approach to echo reference values (SEAMLSS).</span></li>
@@ -205,6 +206,8 @@
 <script src="tests/root_bccg_testcases.js"></script>
 <script src="models/age_height.js"></script>
 <script src="js/aortic-model.js"></script>
+<script src="models/lauzon_schnittka.js"></script>
+<script src="js/lauzon-schnittka.js"></script>
 <script src="js/calculator.js"></script>
 </body>
 </html>
