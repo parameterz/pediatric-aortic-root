@@ -20,7 +20,12 @@
   const SHORT = { ours_cv: "This model (CV)", hs: "Height and sex", phn: "PHN BSA", mah_bsa: "Mahgerefteh BSA", mah_ht: "Mahgerefteh height", ls: "Lauzon-Schnittka", csa_tab: "CSA/ht table", csa_sheet: "CSA/ht as distributed", csa_refit: "CSA/ht refit" };
   const col = (m) => COLOR[m] ? `var(${COLOR[m]})` : "var(--muted)";
   const swBg = (m) => DASHED.has(m) ? `repeating-linear-gradient(90deg,${col(m)} 0 4px,transparent 4px 7px)` : col(m);
-  const CHARTABLE = Object.keys(COLOR);
+  // Display order, in groups: this model, its no-weight version, BSA, Mahgerefteh, CSA/ht, Lauzon-Schnittka
+  const GROUPS = [["ours_cv", "ours"], ["hs"], ["phn"], ["mah_ht", "mah_bsa"], ["csa_tab", "csa_sheet", "csa_refit"], ["ls"]];
+  const ORDER = GROUPS.flat();
+  const GROUP_OF = {}; GROUPS.forEach((g, i) => g.forEach((m) => { GROUP_OF[m] = i; }));
+  const byOrder = (a, b) => ORDER.indexOf(a) - ORDER.indexOf(b);
+  const CHARTABLE = ORDER.filter((m) => COLOR[m]);
   const selected = new Set(["ours_cv", "phn", "ls", "csa_tab"]);
   let key = "SOV", stat = "mean";
 
@@ -94,7 +99,7 @@
   function grade(a, w, b) { return a > b ? "bad" : a > w ? "warn" : ""; }
   function renderScore() {
     const tb = $("score-body"); tb.textContent = "";
-    D.summary[key].forEach((r) => {
+    D.summary[key].slice().sort((a, b) => byOrder(a.method, b.method)).forEach((r) => {
       const tr = document.createElement("tr");
       if (r.method === "ours_cv" || r.method === "ours") tr.className = "ours";
       const cell = (txt, cls) => `<td class="num${cls ? " " + cls : ""}">${txt}</td>`;
@@ -111,12 +116,16 @@
   function renderPills() {
     const host = $("method-pills"); host.textContent = "";
     const have = new Set(D.summary[key].map((r) => r.method));
+    let grp = null, prev = null;
     CHARTABLE.filter((m) => have.has(m)).forEach((m) => {
+      if (GROUP_OF[m] !== prev) {                       // each group stays together when the row wraps
+        grp = document.createElement("span"); grp.className = "pill-group"; host.appendChild(grp); prev = GROUP_OF[m];
+      }
       const b = document.createElement("button");
       b.type = "button"; b.setAttribute("aria-pressed", selected.has(m) ? "true" : "false");
       b.innerHTML = `<span class="sw" style="background:${swBg(m)}"></span>${SHORT[m]}`;
       b.addEventListener("click", () => { selected.has(m) ? selected.delete(m) : selected.add(m); renderPills(); renderTrends(); });
-      host.appendChild(b);
+      grp.appendChild(b);
     });
   }
   const XF = { ht_cm: (v) => v.toFixed(0), age: (v) => v, wfh: (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v), bmiz: (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v) };
@@ -153,7 +162,7 @@
   // ---------- agreement ----------
   function renderAgree() {
     const tb = $("agree-body"); tb.textContent = "";
-    const A = D.agree[key].filter((r) => r.method !== "ours");
+    const A = D.agree[key].filter((r) => r.method !== "ours").sort((a, b) => byOrder(a.method, b.method));
     const maxF = Math.max(...A.map((r) => r.both + r.ours_only + r.other_only));
     A.forEach((r) => {
       const tr = document.createElement("tr");

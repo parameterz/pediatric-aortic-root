@@ -112,6 +112,8 @@ figure.mini figcaption { font-size: 13px; color: var(--muted); margin-top: 2px; 
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mviz { --m1:#3987e5; --m2:#d95926; --m3:#199e70; --m4:#c98500; --m5:#d55181; --m6:#008300; --m7:#9085e9; --m8:#e66767; } }
 :root[data-theme="dark"] .mviz { --m1:#3987e5; --m2:#d95926; --m3:#199e70; --m4:#c98500; --m5:#d55181; --m6:#008300; --m7:#9085e9; --m8:#e66767; }
 .legend-pills { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+#method-pills { column-gap: 14px; row-gap: 6px; }
+.pill-group { display: inline-flex; flex-wrap: wrap; gap: 6px; }
 .legend-pills button, .legend-pills span.lp { font: inherit; font-size: 13px; padding: 4px 10px 4px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
 .legend-pills span.lp { cursor: default; color: var(--ink); }
 .legend-pills button[aria-pressed="true"] { color: var(--ink); border-color: var(--muted); background: var(--surface); font-weight: 700; }
