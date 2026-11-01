@@ -133,7 +133,26 @@
     return { n: TESTS.length, maxd, rows, pass: maxd < 0.001 };
   }
 
+  // ---- site version and author (one place to update; added to every page's footer) ----
+  const SITE = {
+    version: "0.1", status: "early version", date: "31 October 2026",
+    author: "Dan Dyar, MA, ACS, RDCS, FASE",
+    link: "https://www.linkedin.com/in/dan-dyar-ma-acs-rdcs-ae-pe-fe-fase/"
+  };
+  function addFooter() {
+    const f = document.querySelector("footer");
+    if (!f || f.querySelector(".site-credit")) return;
+    const p = document.createElement("p");
+    p.className = "site-credit";
+    const a = document.createElement("a");
+    a.href = SITE.link; a.target = "_blank"; a.rel = "noopener"; a.textContent = SITE.author;
+    p.append("Created by ", a, ` · Version ${SITE.version} (${SITE.status}), ${SITE.date}`);
+    f.prepend(p);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", addFooter); else addFooter();
+
   global.AorticModel = {
+    SITE,
     M, TESTS, R, KEYS, INFO, PHN, MAH, CSA, BANDS,
     interp, wfhOf, typicalWeight, ref, zOf, dAt, medMm, haycock,
     category, fmtZ, mm, pctOf, sgnPct, el, selfTest
