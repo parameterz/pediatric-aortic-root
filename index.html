@@ -52,11 +52,13 @@
         <div class="two">
           <div class="field">
             <label for="ht">Height</label>
-            <div class="unit-input"><input id="ht" inputmode="decimal" autocomplete="off" value="128"><span>cm</span></div>
+            <div class="unit-input"><input id="ht" inputmode="decimal" autocomplete="off" value="128"><button type="button" class="unit-btn" id="ht-unit">cm</button></div>
+            <span class="hint unit-alt" id="ht-alt"></span>
           </div>
           <div class="field">
             <label for="wt">Weight</label>
-            <div class="unit-input"><input id="wt" inputmode="decimal" autocomplete="off" value="28"><span>kg</span></div>
+            <div class="unit-input"><input id="wt" inputmode="decimal" autocomplete="off" value="28"><button type="button" class="unit-btn" id="wt-unit">kg</button></div>
+            <span class="hint unit-alt" id="wt-alt"></span>
           </div>
         </div>
 
@@ -88,9 +90,9 @@
 
     <section class="panel" aria-live="polite" aria-labelledby="out-h">
       <h2 id="out-h">Results</h2>
+      <ul class="flags" id="flags" style="margin:0 0 12px"></ul>
       <div class="results" id="results"></div>
       <div class="modelline" id="modelline"></div>
-      <ul class="flags" id="flags"></ul>
     </section>
   </div>
 
@@ -201,6 +203,7 @@
 </div>
 <script src="models/root_bccg.js"></script>
 <script src="tests/root_bccg_testcases.js"></script>
+<script src="models/age_height.js"></script>
 <script src="js/aortic-model.js"></script>
 <script src="js/calculator.js"></script>
 </body>

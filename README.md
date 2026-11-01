@@ -76,6 +76,8 @@ tests/root_bccg_testcases.csv / .js   reference cases for the self-test and vali
 R/aortic_root_models.R           data preparation, cleaning, exponents, location-scale GAMs, checks
 R/export_bccg.R                  fits the BCCG models and exports the tables and test cases
 R/export_diagnostics.R           aggregated diagnostics for diagnostics.html
+R/export_age_height.R            height-for-age reference used to flag an implausible age (e.g., months entered as years)
+models/age_height.json / .js     output of export_age_height.R
 R/diagnostics_qtests.R           console version of the shape comparison, Q-tests and worm plots
 R/archive/                       earlier ascending-aorta exploration (CSA/height critique, first calculator)
 ```
@@ -90,9 +92,12 @@ The PHN data are **not** included in this repository. Download the Echo-Z/Normal
 source("R/aortic_root_models.R")    # needs mgcv, jsonlite, ggplot2
 source("R/export_bccg.R")           # needs gamlss
 source("R/export_diagnostics.R")    # aggregated diagnostics for the web page
+source("R/export_age_height.R")     # height-for-age curves for the age check
 ```
 
-Outputs are written to `aao_explore/`. Copy `root_bccg.json` and `root_bccg.js` to `models/`, `root_bccg_testcases.csv` and `.js` to `tests/`, and `diagnostics.json` and `.js` to `models/`.
+Outputs are written to `aao_explore/`. Copy `root_bccg.json` and `root_bccg.js` to `models/`, `root_bccg_testcases.csv` and `.js` to `tests/`, and `diagnostics.json`/`.js` and `age_height.json`/`.js` to `models/`.
+
+Height and weight can be entered in cm/kg or in/lb (the small unit button inside each field); the choice is remembered in the browser, and all calculations use cm and kg.
 
 ## Limits
 

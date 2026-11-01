@@ -133,6 +133,65 @@
     return { n: TESTS.length, maxd, rows, pass: maxd < 0.001 };
   }
 
+  // ---- units for height and weight (stored values are always cm and kg) ----
+  const CONV = { ht: { cm: 1, in: 2.54 }, wt: { kg: 1, lb: 0.45359237 } };
+  const METRIC = { ht: "cm", wt: "kg" }, OTHER = { ht: "in", wt: "lb" };
+  const UNITS_KEY = "aortic-units-v1";
+  const units = { ht: "cm", wt: "kg" };
+  try {
+    const u = JSON.parse(localStorage.getItem(UNITS_KEY));
+    if (u && CONV.ht[u.ht]) units.ht = u.ht;
+    if (u && CONV.wt[u.wt]) units.wt = u.wt;
+  } catch (e) { /* storage unavailable: metric */ }
+  const parseNum = (v) => { const x = parseFloat(String(v == null ? "" : v).replace(",", ".")); return isFinite(x) ? x : NaN; };
+  const toMetric = (kind, v) => v * CONV[kind][units[kind]];
+  const fromMetric = (kind, v) => v / CONV[kind][units[kind]];
+  function setUnit(kind, u) {
+    units[kind] = u;
+    try { localStorage.setItem(UNITS_KEY, JSON.stringify(units)); } catch (e) { /* ignore */ }
+  }
+  // Wire a field: <input id="X"> plus <button id="X-unit"> and optional <span id="X-alt">.
+  // The input holds a metric example value in the HTML; it is converted if the saved preference is US units.
+  function bindUnitField(inputId, kind, onChange) {
+    const inp = document.getElementById(inputId), btn = document.getElementById(inputId + "-unit"), alt = document.getElementById(inputId + "-alt");
+    if (!inp || !btn) return;
+    const name = kind === "ht" ? "Height" : "Weight";
+    if (units[kind] !== METRIC[kind]) { const v = parseNum(inp.value); if (isFinite(v)) inp.value = (v / CONV[kind][units[kind]]).toFixed(1); }
+    const paint = () => {
+      const next = units[kind] === METRIC[kind] ? OTHER[kind] : METRIC[kind];
+      btn.textContent = units[kind];
+      btn.setAttribute("aria-label", `${name} in ${units[kind]}. Switch to ${next}`);
+      btn.title = `Switch to ${next}`;
+      if (alt) { const v = parseNum(inp.value); alt.textContent = units[kind] !== METRIC[kind] && isFinite(v) ? `= ${toMetric(kind, v).toFixed(1)} ${METRIC[kind]}` : ""; }
+    };
+    btn.addEventListener("click", () => {
+      const v = parseNum(inp.value), m = isFinite(v) ? toMetric(kind, v) : NaN;
+      setUnit(kind, units[kind] === METRIC[kind] ? OTHER[kind] : METRIC[kind]);
+      if (isFinite(m)) inp.value = fromMetric(kind, m).toFixed(1);
+      paint(); if (onChange) onChange();
+    });
+    inp.addEventListener("input", paint);
+    paint();
+  }
+
+  // ---- height-for-age check (needs models/age_height.js; silent if it is missing) ----
+  const AH = global.AORTIC_AGEHT || null;
+  function htForAgeZ(htCm, age, male) {
+    if (!AH) return NaN;
+    const s = AH[male ? "M" : "F"];
+    const mu = interp(age, AH.age, s.mu), sg = interp(age, AH.age, s.sigma), nu = s.nu;
+    return Math.abs(nu) < 1e-6 ? Math.log(htCm / mu) / sg : (Math.pow(htCm / mu, nu) - 1) / (nu * sg);
+  }
+  function ageCheck(p) {
+    if (!AH || !(p.ht > 0) || !(p.age >= 0) || p.age > 18) return null;
+    const z = htForAgeZ(p.ht, p.age, p.male);
+    if (!(Math.abs(z) > 4)) return null;
+    const typical = interp(p.age, AH.age, AH[p.male ? "M" : "F"].mu);
+    let msg = `A height of ${p.ht.toFixed(0)} cm is unusual for age ${+p.age.toFixed(1)} (typical about ${typical.toFixed(0)} cm). Check the age and height.`;
+    if (p.age >= 1 && Math.abs(htForAgeZ(p.ht, p.age / 12, p.male)) < 2.5) msg += ` If the age was entered in months, it is ${(p.age / 12).toFixed(1)} years.`;
+    return msg + " Very tall or short stature, as in Marfan or Turner syndrome, can also cause this.";
+  }
+
   // ---- site version and author (one place to update; added to every page's footer) ----
   const SITE = {
     version: "0.1", status: "early version", date: "31 October 2026",
@@ -152,7 +211,7 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", addFooter); else addFooter();
 
   global.AorticModel = {
-    SITE,
+    SITE, units, toMetric, fromMetric, setUnit, bindUnitField, parseNum, htForAgeZ, ageCheck,
     M, TESTS, R, KEYS, INFO, PHN, MAH, CSA, BANDS,
     interp, wfhOf, typicalWeight, ref, zOf, dAt, medMm, haycock,
     category, fmtZ, mm, pctOf, sgnPct, el, selfTest
