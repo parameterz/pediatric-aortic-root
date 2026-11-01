@@ -12,6 +12,7 @@ Z-scores for the **sinuses of Valsalva**, **sinotubular junction** and **ascendi
 | `charts.html` | Reference charts of diameter by height (z −2 to +5) for each level and sex, plus a visit tracker |
 | `shape.html` | Interactive explainer: how the Box-Cox shape λ changes the z-score of one diameter |
 | `diagnostics.html` | Residuals against body size, Q-tests, Q-Q, histogram, worm plots, shape comparison and local height exponents (aggregated summaries only) |
+| `methods.html` | Every published method applied to the same healthy PHN children: scorecard (bias, spread, skew, tails, trends, sex), drift charts, agreement on z > 2, and the effect of extra weight on the expected diameter |
 | `validation.html` | Every reference case recomputed in the browser and compared with R |
 
 Everything runs in the browser. Nothing entered on the pages is sent anywhere.
@@ -81,6 +82,8 @@ models/age_height.json / .js     output of export_age_height.R
 R/export_ls_model.R              reads the Lauzon-Schnittka 2025 model out of the authors' R function z_score() and runs it on reference cases
 models/lauzon_schnittka.js       its output: coefficients, B-spline knots and weights, WHO BMI-for-age LMS vectors
 js/lauzon-schnittka.js           line-by-line port of z_score(); checked against R (tests/ls_reference_cases.js)
+R/export_methods_comparison.R    head-to-head of all methods on the PHN children (10-fold CV of this model); aggregated output for methods.html
+models/methods.json / .js        its output
 R/diagnostics_qtests.R           console version of the shape comparison, Q-tests and worm plots
 R/archive/                       earlier ascending-aorta exploration (CSA/height critique, first calculator)
 ```
@@ -97,9 +100,10 @@ source("R/export_bccg.R")           # needs gamlss
 source("R/export_diagnostics.R")    # aggregated diagnostics for the web page
 source("R/export_age_height.R")     # height-for-age curves for the age check
 source("R/export_ls_model.R")       # Lauzon-Schnittka model from the authors' zscorecalculator.r (set ls_file); no PHN data needed
+source("R/export_methods_comparison.R")  # all methods on the PHN children; needs ls_file too (about 3 minutes)
 ```
 
-Outputs are written to `aao_explore/`. Copy `root_bccg.json` and `root_bccg.js` to `models/`, `root_bccg_testcases.csv` and `.js` to `tests/`, and `diagnostics.json`/`.js`, `age_height.json`/`.js` and `lauzon_schnittka.json`/`.js` to `models/`, and `ls_reference_cases.js` to `tests/`. The authors' `zscorecalculator.r` is not included here; it is distributed by them with the paper.
+Outputs are written to `aao_explore/`. Copy `root_bccg.json` and `root_bccg.js` to `models/`, `root_bccg_testcases.csv` and `.js` to `tests/`, and `diagnostics.json`/`.js`, `age_height.json`/`.js` and `lauzon_schnittka.json`/`.js` and `methods.json`/`.js` to `models/`, and `ls_reference_cases.js` to `tests/`. The authors' `zscorecalculator.r` is not included here; it is distributed by them with the paper.
 
 Height and weight can be entered in cm/kg or in/lb (the small unit button inside each field); the choice is remembered in the browser, and all calculations use cm and kg.
 

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Every published normalization method for pediatric aortic diameters applied to the same healthy PHN children: bias, spread, tails, residual trends and flag agreement.">
+<title>Method Comparison</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/site.css">
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<div class="page mviz">
+  <nav class="sitenav" aria-label="Pages"><a class="brand" href="index.html">Pediatric Aortic Z-Scores</a><a class="tab" href="index.html">Calculator</a><a class="tab" href="charts.html">Reference charts</a><a class="tab" href="shape.html">Distribution shape</a><a class="tab" href="diagnostics.html">Diagnostics</a><a class="tab" href="methods.html" aria-current="page">Methods</a><a class="tab" href="validation.html">Validation</a></nav>
+  <header>
+    <div class="eyebrow">Method comparison</div>
+    <h1>Every method on the same healthy children</h1>
+    <p class="lede">Each published way of normalizing aortic diameters, applied to the same 3,200 healthy children. A good reference should give z-scores with mean 0 and SD 1, about 2.3% beyond each of ±2, and no trend left against height, age, build or sex.</p>
+  </header>
+
+  <section class="panel" id="missing" hidden>
+    <h2>Comparison file not found</h2>
+    <p class="prose">This page reads <span class="mono">models/methods.js</span>, written by <span class="mono">R/export_methods_comparison.R</span>.</p>
+  </section>
+
+  <div id="content" style="display:grid;gap:24px">
+    <section class="panel prose">
+      <h2>What was compared</h2>
+      <p>Every method below was applied to the healthy children of the PHN public database (after the same cleaning as the model). <b>This model, cross-validated</b> scores each child with a model fitted without them (10 folds), so it has no home advantage. The PHN, Mahgerefteh and CSA/height methods were derived from these same children, so they do. <b>Lauzon-Schnittka</b> is the only reference built on a different cohort (a Canadian multicentre clinical cohort read by many readers), computed with the authors' own R function; it tests how well a reference transfers to another lab. Mahgerefteh is published for ages 2 and up, and Chaudhary CSA/height covers the sinuses and ascending aorta only.</p>
+      <p>All figures are group summaries (whole-cohort statistics and 20 equal-count groups of about 160 children); no individual records are published. Comparison generated <span id="m-date" class="mono">—</span>.</p>
+    </section>
+
+    <section class="panel prose findings">
+      <h2>What it shows</h2>
+      <ul>
+        <li><b>This model holds up out of sample.</b> Cross-validated z-scores keep SD 1.01, 2.1–2.7% beyond each of ±2 and no trend against height, age, build, BMIz or sex. The sinotubular junction has slightly heavy tails.</li>
+        <li><b>Ignoring weight costs about 0.2 z per SD of build</b> (height-and-sex model), and changes about 1 in 4 of the z &gt; 2 calls.</li>
+        <li><b>BSA<sup>0.5</sup> indices overcorrect for weight</b> (heavier children score about 0.1–0.15 z lower per SD of build), are right-skewed, and leave boys about 0.1–0.5 z above girls.</li>
+        <li><b>Dividing by height overcorrects for height</b> (Mahgerefteh: taller children score about 0.2–0.3 z lower per SD), because the aorta grows less than in proportion to height.</li>
+        <li><b>Lauzon-Schnittka transfers in shape but not in level.</b> Its trends against body size are nearly flat in these children, but the spread is narrower (SD about 0.9 at the sinuses and junction) and its ascending aorta reference sits about half a z-score higher than these measurements, so it flags only a third of the children this model places above +2. A different measurement convention or reader population is a likely reason.</li>
+        <li><b>CSA/height is right-skewed</b> (skewness about 0.5): 3–4% of healthy children land above +2 and under 1% below −2, with trends left against build and BMIz. The continuous version as distributed is also offset (sinuses −0.5 z; ascending aorta +0.3 z, flagging 6.5% of healthy children).</li>
+        <li><b>Extra weight raises the expected diameter only a little:</b> at BMIz +3, about 2–3.5% in this model and 3–5% for Lauzon-Schnittka at the sinuses and ascending aorta, against 7–17% implied by BSA<sup>0.5</sup>.</li>
+      </ul>
+    </section>
+
+    <div class="tabs" id="level-tabs" role="group" aria-label="Level">
+      <button type="button" data-k="SOV" aria-pressed="true"><span class="dot" style="background:var(--c-sov)"></span>Sinuses</button>
+      <button type="button" data-k="STJ" aria-pressed="false"><span class="dot" style="background:var(--c-stj)"></span>ST junction</button>
+      <button type="button" data-k="AAO" aria-pressed="false"><span class="dot" style="background:var(--c-aao)"></span>Ascending</button>
+    </div>
+
+    <section class="panel">
+      <h2>Scorecard: <span class="lvl-name"></span></h2>
+      <p class="sub" style="margin:0 0 12px;max-width:85ch">Trend columns give the change in mean z per standard deviation of each variable (a slope of 0.2 means the tallest children run about 0.8 z higher than the shortest). Boy − girl is the difference in mean z. Shaded cells are off target: <span class="pill warn">! worth noting</span> <span class="pill bad">!! clearly off</span>. Thresholds: mean beyond ±0.1 / ±0.25; SD outside 0.95–1.05 / 0.9–1.1; skewness beyond ±0.1 / ±0.25; tail outside 1.6–3.0% / 1.2–4.0%; trends and sex difference beyond ±0.05 / ±0.15.</p>
+      <div class="table-wrap">
+        <table class="score">
+          <thead>
+            <tr><th rowspan="2">Method</th><th class="num" rowspan="2">Children</th><th class="num" rowspan="2">Mean</th><th class="num" rowspan="2">SD</th><th class="num" rowspan="2">Skew</th><th class="num" colspan="2">Beyond (%)</th><th class="num" colspan="4">Trend in z per SD of</th><th class="num" rowspan="2">Boy − girl</th></tr>
+            <tr><th class="num">+2</th><th class="num">−2</th><th class="num">Height</th><th class="num">Age</th><th class="num">Build</th><th class="num">BMIz</th></tr>
+          </thead>
+          <tbody id="score-body"></tbody>
+        </table>
+      </div>
+      <p class="sub" style="margin:10px 0 0">Build is weight for height (weight relative to the typical weight for the child's height). BMIz is the WHO BMI-for-age z-score.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Where each method drifts: <span class="lvl-name"></span></h2>
+      <p class="sub" style="margin:0 0 12px;max-width:85ch">Mean z (or its SD) in 20 equal-count groups along each variable. A good reference stays flat at 0 (or at 1 for SD). Choose methods with the buttons; hover a chart for the values in each group.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px">
+        <div class="tabs" id="stat-tabs" role="group" aria-label="Statistic">
+          <button type="button" data-s="mean" aria-pressed="true">Mean z</button>
+          <button type="button" data-s="sd" aria-pressed="false">SD of z</button>
+        </div>
+      </div>
+      <div class="legend-pills" id="method-pills" role="group" aria-label="Methods shown"></div>
+      <div class="minis" id="trends"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Who gets flagged above +2: <span class="lvl-name"></span></h2>
+      <p class="sub" style="margin:0 0 12px;max-width:85ch">Agreement with the cross-validated model on z &gt; 2. Expected in healthy children: about 2.3%, roughly 73 children. <i>Both</i> flagged by both; <i>this model only</i> flagged here and missed by the other method; <i>other only</i> flagged by the other method alone.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Method</th><th class="num">Children</th><th class="num">Both</th><th class="num">This model only</th><th class="num">Other only</th><th style="width:38%">Flagged above +2</th></tr></thead>
+          <tbody id="agree-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>What extra weight does to the expected diameter: <span class="lvl-name"></span></h2>
+      <p class="sub" style="margin:0 0 12px;max-width:85ch">Three example children at a fixed height and age, made heavier or lighter (WHO BMI-for-age z from −2 to +4). Each line is the expected (median) diameter under that method, as a percentage of its value at BMIz 0. Two independent models, this one and Lauzon-Schnittka, are compared with the PHN BSA<sup>0.5</sup> index. This model is held flat beyond the build range of the PHN children (dashed).</p>
+      <div class="legend-pills static" id="curve-legend"></div>
+      <div class="minis" id="curves"></div>
+    </section>
+  </div>
+  <div class="tip" id="tip" hidden></div>
+  <footer>
+    <p>The NIH/NHLBI Pediatric Heart Network Echo-Z/Normal ECG dataset was used in preparation of this work. Data were downloaded from www.pediatricheartnetwork.org on 01/01/2026.</p>
+    <p>This site is an independent analysis and is not a product of the Pediatric Heart Network. Calculations run in your browser; nothing you enter is sent anywhere.</p>
+  </footer>
+</div>
+<style>
+.minis { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+figure.mini { margin: 0; min-width: 0; }
+figure.mini svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
+figure.mini figcaption { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.mviz { --m1:#2a78d6; --m2:#eb6834; --m3:#1baf7a; --m4:#eda100; --m5:#e87ba4; --m6:#008300; --m7:#6250d6; --m8:#e34948; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mviz { --m1:#3987e5; --m2:#d95926; --m3:#199e70; --m4:#c98500; --m5:#d55181; --m6:#008300; --m7:#9085e9; --m8:#e66767; } }
+:root[data-theme="dark"] .mviz { --m1:#3987e5; --m2:#d95926; --m3:#199e70; --m4:#c98500; --m5:#d55181; --m6:#008300; --m7:#9085e9; --m8:#e66767; }
+.legend-pills { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.legend-pills button, .legend-pills span.lp { font: inherit; font-size: 13px; padding: 4px 10px 4px 8px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.legend-pills span.lp { cursor: default; color: var(--ink); }
+.legend-pills button[aria-pressed="true"] { color: var(--ink); border-color: var(--muted); background: var(--surface); font-weight: 700; }
+.legend-pills button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.legend-pills .sw { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+.legend-pills button[aria-pressed="false"] .sw { opacity: .3; }
+.pill.warn { background: var(--band-mild); color: var(--chip-mild-ink); }
+table.score td.warn { background: var(--band-mild); color: var(--chip-mild-ink); }
+table.score td.bad { background: var(--band-severe); color: var(--chip-severe-ink); font-weight: 700; }
+table.score td.warn::before { content: "! "; }
+table.score td.bad::before { content: "!! "; }
+table.score tr.ours td:first-child { font-weight: 700; }
+table.score th:first-child, table.score td:first-child { min-width: 190px; position: sticky; left: 0; background: var(--surface); z-index: 1; }
+@media (max-width: 560px) { table.score th:first-child, table.score td:first-child { min-width: 150px; box-shadow: 1px 0 0 var(--line); } }
+.findings li { margin-bottom: 6px; }
+table.score td:first-child .sw { display: inline-block; width: 12px; height: 3px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+.agbar { display: flex; height: 12px; gap: 2px; }
+.agbar span { display: block; height: 100%; }
+.agbar span:first-child { border-radius: 4px 0 0 4px; }
+.agbar span:last-child { border-radius: 0 4px 4px 0; }
+.ag-key { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin-top: 8px; }
+.ag-key i { display: inline-block; width: 12px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+</style>
+<script src="models/root_bccg.js"></script>
+<script src="js/aortic-model.js"></script>
+<script src="models/methods.js"></script>
+<script src="js/methods.js"></script>
+
+</body>
+</html>
