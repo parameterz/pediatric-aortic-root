@@ -63,30 +63,30 @@
   function compareTable(key, p, hasWt) {
     const dMm = p.d[key], dcm = dMm / 10, ht = p.ht / 100, sexKey = p.male ? "M" : "F";
     const out = [];
-    const add = (name, src, z, cut, extra) => out.push(Object.assign({ name, src, z, cut }, extra || {}));
-    const na = (name, src, note) => out.push({ name, src, z: NaN, cut: NaN, note });
+    const add = (name, src, z, cut, exp, extra) => out.push(Object.assign({ name, src, z, cut, exp }, extra || {}));   // exp = expected (median) diameter, mm
+    const na = (name, src, note) => out.push({ name, src, z: NaN, cut: NaN, exp: NaN, note });
 
-    if (hasWt) { const r = ref(key, p, true); add("This model", "Height, weight for height, age, sex; fitted shape", zOf(dMm, r), dAt(r, 2), { primary: true }); }
+    if (hasWt) { const r = ref(key, p, true); add("This model", "Height, weight for height, age, sex; fitted shape", zOf(dMm, r), dAt(r, 2), dAt(r, 0), { primary: true }); }
     else na("This model", "Height, weight for height, age, sex; fitted shape", "needs weight");
     const rc = ref(key, p, false);
-    add("Height and sex", "Same model without weight", zOf(dMm, rc), dAt(rc, 2), { primary: !hasWt });
+    add("Height and sex", "Same model without weight", zOf(dMm, rc), dAt(rc, 2), dAt(rc, 0), { primary: !hasWt });
     if (PHN[key]) {
       const src = "PHN Echo Z-Score Project table (Lopez 2017): diameter ÷ BSA^0.5, Haycock BSA";
       if (!hasWt) na("PHN z-score", src, "needs weight");
-      else { const rb = Math.sqrt(haycock(p.ht, p.wt)), [m, s] = PHN[key]; add("PHN z-score", src, (dcm / rb - m) / s, (m + 2 * s) * rb * 10); }
+      else { const rb = Math.sqrt(haycock(p.ht, p.wt)), [m, s] = PHN[key]; add("PHN z-score", src, (dcm / rb - m) / s, (m + 2 * s) * rb * 10, m * rb * 10); }
     }
 
     if (MAH[key]) {
       const src = "PHN values from Mahgerefteh 2021";
       // Mahgerefteh's BSA^0.5 index is left out: same index and nearly the same values as the PHN z-score (MAH.bsa kept in aortic-model.js)
       if (p.age < 2) na("Mahgerefteh height index, ≥ 2 y", "Diameter ÷ height; " + src, "published for ≥ 2 y");
-      else { const [m, s] = MAH[key].ht; add("Mahgerefteh height index, ≥ 2 y", "Diameter ÷ height; " + src, (dcm / ht - m) / s, (m + 2 * s) * ht * 10); }
+      else { const [m, s] = MAH[key].ht; add("Mahgerefteh height index, ≥ 2 y", "Diameter ÷ height; " + src, (dcm / ht - m) / s, (m + 2 * s) * ht * 10, m * ht * 10); }
     }
     if (window.LauzonSchnittka) {
       const src = "Lauzon-Schnittka 2025: Canadian clinical cohort; height, weight, BMI-for-age z (WHO), age";
       const r = hasWt ? LauzonSchnittka.ref(key, p) : null;
       if (!hasWt) na("Lauzon-Schnittka", src, "needs weight");
-      else if (r) add("Lauzon-Schnittka", src + `; this child's BMIz ${fmtZ(r.bmiz)}`, LauzonSchnittka.z(dMm, r), LauzonSchnittka.dAt(r, 2));
+      else if (r) add("Lauzon-Schnittka", src + `; this child's BMIz ${fmtZ(r.bmiz)}`, LauzonSchnittka.z(dMm, r), LauzonSchnittka.dAt(r, 2), r.mu);
       else na("Lauzon-Schnittka", src, "published to 19 y");
     }
     if (CSA[key]) {
@@ -96,10 +96,10 @@
       const csa = Math.PI * (dcm / 2) ** 2 / ht;
       const toMm = (v) => 2 * Math.sqrt(v * ht / Math.PI) * 10;
       const reg = (k) => k.int + k.age * p.age + (p.male ? k.male + k.ma * p.age : 0);
-      add("CSA/ht, age-group table", "Chaudhary et al., Pediatr Cardiol 2026", (csa - bm) / bsd, toMm(bm + 2 * bsd));
+      add("CSA/ht, age-group table", "Chaudhary et al., Pediatr Cardiol 2026", (csa - bm) / bsd, toMm(bm + 2 * bsd), toMm(bm));
       const ms = reg(c.sheet), mr = reg(c.refit);
-      add("CSA/ht, continuous age", "Coefficients as distributed in the 2026 supplement", (csa - ms) / bsd, toMm(ms + 2 * bsd));
-      add("CSA/ht, continuous age", "Coefficients refit to the public PHN data", (csa - mr) / bsd, toMm(mr + 2 * bsd));
+      add("CSA/ht, continuous age", "Coefficients as distributed in the 2026 supplement", (csa - ms) / bsd, toMm(ms + 2 * bsd), toMm(ms));
+      add("CSA/ht, continuous age", "Coefficients refit to the public PHN data", (csa - mr) / bsd, toMm(mr + 2 * bsd), toMm(mr));
     }
     return out;
   }
@@ -116,7 +116,7 @@
       host.appendChild(h);
       const wrap = document.createElement("div"); wrap.className = "table-wrap";
       const tbl = document.createElement("table");
-      tbl.innerHTML = `<thead><tr><th>Method</th><th class="num">z</th><th class="num">Diameter at z = +2</th></tr></thead>`;
+      tbl.innerHTML = `<thead><tr><th>Method</th><th class="num">% of expected</th><th class="num">z</th><th class="num">Diameter at z = +2</th></tr></thead>`;
       const tb = document.createElement("tbody");
       compareTable(key, p, hasWt).forEach((r) => {
         const tr = document.createElement("tr"); if (r.primary) tr.className = "primary";
@@ -124,9 +124,13 @@
         const s = document.createElement("span"); s.className = "src"; s.textContent = r.src; td1.appendChild(s);
         const td2 = document.createElement("td"); td2.className = "num";
         const td3 = document.createElement("td"); td3.className = "num";
-        if (isFinite(r.z)) { td2.textContent = fmtZ(r.z); td3.textContent = mm(r.cut); }
-        else { td2.textContent = "—"; td3.textContent = r.note; td3.classList.add("sub"); }
-        tr.append(td1, td2, td3); tb.appendChild(tr);
+        const td4 = document.createElement("td"); td4.className = "num";
+        if (isFinite(r.z)) {
+          td2.textContent = Math.round(100 * p.d[key] / r.exp) + "%";
+          const e = document.createElement("span"); e.className = "src"; e.textContent = "of " + mm(r.exp); td2.appendChild(e);
+          td3.textContent = fmtZ(r.z); td4.textContent = mm(r.cut);
+        } else { td2.textContent = "—"; td3.textContent = "—"; td4.textContent = r.note; td4.classList.add("sub"); }
+        tr.append(td1, td2, td3, td4); tb.appendChild(tr);
       });
       tbl.appendChild(tb); wrap.appendChild(tbl); host.appendChild(wrap);
     });

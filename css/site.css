@@ -140,7 +140,9 @@ td.num { font-family: var(--font-num); font-variant-numeric: tabular-nums; white
 th.num { text-align: right; }
 tr.primary td { font-weight: 700; }
 #cmp-body table { table-layout: fixed; }
-#cmp-body th:nth-child(1) { width: 60%; }
+#cmp-body th:nth-child(1) { width: 46%; }
+#cmp-body td.num .src { display: block; }
+@media (max-width: 560px) { #cmp-body table { font-size: 13px; } #cmp-body th:nth-child(1) { width: 38%; } #cmp-body th, #cmp-body td { padding-left: 4px; padding-right: 4px; } #cmp-body thead th { font-size: 11px; } }
 
 .src { display: block; color: var(--muted); font-size: 12px; font-weight: 400; }
 
