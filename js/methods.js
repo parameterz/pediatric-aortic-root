@@ -9,7 +9,7 @@
   $("m-date").textContent = D.meta.created;
 
   // Fixed color per method (categorical slots in order; never re-assigned when filtering)
-  const COLOR = { ours_cv: "--m1", phn: "--m2", ls: "--m3", csa_tab: "--m4", mah_ht: "--m5", hs: "--m6", mah_bsa: "--m7", csa_sheet: "--m8", csa_refit: "--m8" };
+  const COLOR = { ours_cv: "--m1", phn: "--m2", ls: "--m3", csa_tab: "--m4", mah_ht: "--m5", hs: "--m6", csa_sheet: "--m8", csa_refit: "--m8" };
   const DASHED = new Set(["csa_refit"]);   // same family as csa_sheet: same hue, dashed (no ninth color)
   const NAME = {
     ours_cv: "This model, cross-validated", ours: "This model, in sample", hs: "Height and sex (this model, no weight)",
@@ -20,8 +20,9 @@
   const SHORT = { ours_cv: "This model (CV)", hs: "Height and sex", phn: "PHN BSA", mah_bsa: "Mahgerefteh BSA", mah_ht: "Mahgerefteh height", ls: "Lauzon-Schnittka", csa_tab: "CSA/ht table", csa_sheet: "CSA/ht as distributed", csa_refit: "CSA/ht refit" };
   const col = (m) => COLOR[m] ? `var(${COLOR[m]})` : "var(--muted)";
   const swBg = (m) => DASHED.has(m) ? `repeating-linear-gradient(90deg,${col(m)} 0 4px,transparent 4px 7px)` : col(m);
-  // Display order, in groups: this model, its no-weight version, BSA, Mahgerefteh, CSA/ht, Lauzon-Schnittka
-  const GROUPS = [["ours_cv", "ours"], ["hs"], ["phn"], ["mah_ht", "mah_bsa"], ["csa_tab", "csa_sheet", "csa_refit"], ["ls"]];
+  // Methods shown, in display order and groups (Mahgerefteh BSA is omitted: same index and values as PHN BSA).
+  // Groups: this model, its no-weight version, BSA, Mahgerefteh, CSA/ht, Lauzon-Schnittka
+  const GROUPS = [["ours_cv", "ours"], ["hs"], ["phn"], ["mah_ht"], ["csa_tab", "csa_sheet", "csa_refit"], ["ls"]];
   const ORDER = GROUPS.flat();
   const GROUP_OF = {}; GROUPS.forEach((g, i) => g.forEach((m) => { GROUP_OF[m] = i; }));
   const byOrder = (a, b) => ORDER.indexOf(a) - ORDER.indexOf(b);
@@ -99,7 +100,7 @@
   function grade(a, w, b) { return a > b ? "bad" : a > w ? "warn" : ""; }
   function renderScore() {
     const tb = $("score-body"); tb.textContent = "";
-    D.summary[key].slice().sort((a, b) => byOrder(a.method, b.method)).forEach((r) => {
+    D.summary[key].filter((r) => ORDER.includes(r.method)).sort((a, b) => byOrder(a.method, b.method)).forEach((r) => {
       const tr = document.createElement("tr");
       if (r.method === "ours_cv" || r.method === "ours") tr.className = "ours";
       const cell = (txt, cls) => `<td class="num${cls ? " " + cls : ""}">${txt}</td>`;
@@ -162,7 +163,7 @@
   // ---------- agreement ----------
   function renderAgree() {
     const tb = $("agree-body"); tb.textContent = "";
-    const A = D.agree[key].filter((r) => r.method !== "ours").sort((a, b) => byOrder(a.method, b.method));
+    const A = D.agree[key].filter((r) => r.method !== "ours" && ORDER.includes(r.method)).sort((a, b) => byOrder(a.method, b.method));
     const maxF = Math.max(...A.map((r) => r.both + r.ours_only + r.other_only));
     A.forEach((r) => {
       const tr = document.createElement("tr");
