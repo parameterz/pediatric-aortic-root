@@ -26,7 +26,7 @@ For each level of the aorta:
 - **percent of expected** (100 × measured ÷ predicted median), which does not depend on the tail model and is the steadier number for severe dilation
 - a note when |z| > 4, where almost no reference children exist and any z-score is an extrapolation
 - a **weight-for-height** panel showing how build changes the expected diameter
-- a collapsible **comparison** with other methods: the PHN BSA z-score (Lopez 2017), height and BSA indices (Mahgerefteh 2021), Lauzon-Schnittka (2025; height, weight, WHO BMI-for-age z and age, from a large clinical cohort that includes overweight and obese children), and CSA/height (Chaudhary 2026)
+- a collapsible **comparison** with other methods: the PHN BSA z-score (Lopez 2017), the height index (Mahgerefteh 2021; their BSA index is omitted because it duplicates the PHN z-score), Lauzon-Schnittka (2025; height, weight, WHO BMI-for-age z and age, from a large clinical cohort that includes overweight and obese children), and CSA/height (Chaudhary 2026)
 
 ## The model
 

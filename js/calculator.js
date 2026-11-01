@@ -78,11 +78,9 @@
 
     if (MAH[key]) {
       const src = "PHN values from Mahgerefteh 2021";
-      if (!hasWt) na("BSA index, ≥ 2 y", "Diameter ÷ BSA^0.5 (Haycock); " + src, "needs weight");
-      else if (p.age < 2) na("BSA index, ≥ 2 y", "Diameter ÷ BSA^0.5 (Haycock); " + src, "published for ≥ 2 y");
-      else { const rb = Math.sqrt(haycock(p.ht, p.wt)), [m, s] = MAH[key].bsa; add("BSA index, ≥ 2 y", "Diameter ÷ BSA^0.5 (Haycock); " + src, (dcm / rb - m) / s, (m + 2 * s) * rb * 10); }
-      if (p.age < 2) na("Height index, ≥ 2 y", "Diameter ÷ height; " + src, "published for ≥ 2 y");
-      else { const [m, s] = MAH[key].ht; add("Height index, ≥ 2 y", "Diameter ÷ height; " + src, (dcm / ht - m) / s, (m + 2 * s) * ht * 10); }
+      // Mahgerefteh's BSA^0.5 index is left out: same index and nearly the same values as the PHN z-score (MAH.bsa kept in aortic-model.js)
+      if (p.age < 2) na("Mahgerefteh height index, ≥ 2 y", "Diameter ÷ height; " + src, "published for ≥ 2 y");
+      else { const [m, s] = MAH[key].ht; add("Mahgerefteh height index, ≥ 2 y", "Diameter ÷ height; " + src, (dcm / ht - m) / s, (m + 2 * s) * ht * 10); }
     }
     if (window.LauzonSchnittka) {
       const src = "Lauzon-Schnittka 2025: Canadian clinical cohort; height, weight, BMI-for-age z (WHO), age";
