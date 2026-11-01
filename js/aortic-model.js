@@ -135,7 +135,7 @@
 
   // ---- site version and author (one place to update; added to every page's footer) ----
   const SITE = {
-    version: "0.1", status: "early version", date: "31 October 2026",
+    version: "0.2", status: "early version", date: "31 October 2026",
     author: "Dan Dyar, MA, ACS, RDCS, FASE",
     link: "https://www.linkedin.com/in/dan-dyar-ma-acs-rdcs-ae-pe-fe-fase/"
   };
