@@ -9,15 +9,17 @@
   $("m-date").textContent = D.meta.created;
 
   // Fixed color per method (categorical slots in order; never re-assigned when filtering)
-  const COLOR = { ours_cv: "--m1", phn: "--m2", ls: "--m3", csa_tab: "--m4", mah_ht: "--m5", hs: "--m6", mah_bsa: "--m7", csa_sheet: "--m8" };
+  const COLOR = { ours_cv: "--m1", phn: "--m2", ls: "--m3", csa_tab: "--m4", mah_ht: "--m5", hs: "--m6", mah_bsa: "--m7", csa_sheet: "--m8", csa_refit: "--m8" };
+  const DASHED = new Set(["csa_refit"]);   // same family as csa_sheet: same hue, dashed (no ninth color)
   const NAME = {
     ours_cv: "This model, cross-validated", ours: "This model, in sample", hs: "Height and sex (this model, no weight)",
     phn: "PHN z-score (BSA⁰·⁵)", mah_bsa: "Mahgerefteh BSA⁰·⁵ (≥ 2 y)", mah_ht: "Mahgerefteh height (≥ 2 y)",
     ls: "Lauzon-Schnittka", csa_tab: "CSA/ht, age-group table", csa_sheet: "CSA/ht, continuous (as distributed)",
     csa_refit: "CSA/ht, continuous (refit)"
   };
-  const SHORT = { ours_cv: "This model (CV)", hs: "Height and sex", phn: "PHN BSA", mah_bsa: "Mahgerefteh BSA", mah_ht: "Mahgerefteh height", ls: "Lauzon-Schnittka", csa_tab: "CSA/ht table", csa_sheet: "CSA/ht as distributed" };
+  const SHORT = { ours_cv: "This model (CV)", hs: "Height and sex", phn: "PHN BSA", mah_bsa: "Mahgerefteh BSA", mah_ht: "Mahgerefteh height", ls: "Lauzon-Schnittka", csa_tab: "CSA/ht table", csa_sheet: "CSA/ht as distributed", csa_refit: "CSA/ht refit" };
   const col = (m) => COLOR[m] ? `var(${COLOR[m]})` : "var(--muted)";
+  const swBg = (m) => DASHED.has(m) ? `repeating-linear-gradient(90deg,${col(m)} 0 4px,transparent 4px 7px)` : col(m);
   const CHARTABLE = Object.keys(COLOR);
   const selected = new Set(["ours_cv", "phn", "ls", "csa_tab"]);
   let key = "SOV", stat = "mean";
@@ -96,7 +98,7 @@
       const tr = document.createElement("tr");
       if (r.method === "ours_cv" || r.method === "ours") tr.className = "ours";
       const cell = (txt, cls) => `<td class="num${cls ? " " + cls : ""}">${txt}</td>`;
-      const sw = COLOR[r.method] ? `<span class="sw" style="background:${col(r.method)}"></span>` : `<span class="sw"></span>`;
+      const sw = COLOR[r.method] ? `<span class="sw" style="background:${swBg(r.method)}"></span>` : `<span class="sw"></span>`;
       tr.innerHTML = `<td>${sw}${NAME[r.method] || r.method}</td>` + cell(r.n.toLocaleString("en-US")) +
         cell(sgn(r.mean, 2), T.mean(r.mean)) + cell(r.sd.toFixed(2), T.sd(r.sd)) + cell(sgn(r.skew, 2), T.skew(r.skew)) +
         cell(r.gt2.toFixed(1), T.tail(r.gt2)) + cell(r.lt2.toFixed(1), T.tail(r.lt2)) +
@@ -112,7 +114,7 @@
     CHARTABLE.filter((m) => have.has(m)).forEach((m) => {
       const b = document.createElement("button");
       b.type = "button"; b.setAttribute("aria-pressed", selected.has(m) ? "true" : "false");
-      b.innerHTML = `<span class="sw" style="background:${col(m)}"></span>${SHORT[m]}`;
+      b.innerHTML = `<span class="sw" style="background:${swBg(m)}"></span>${SHORT[m]}`;
       b.addEventListener("click", () => { selected.has(m) ? selected.delete(m) : selected.add(m); renderPills(); renderTrends(); });
       host.appendChild(b);
     });
@@ -141,10 +143,10 @@
       // draw the cross-validated model last so it sits on top
       ms.slice().sort((a, c) => (a === "ours_cv") - (c === "ours_cv")).forEach((m) => {
         svg.appendChild(path(b.x, S[m], P, `stroke:var(--surface);stroke-width:4.5`));
-        svg.appendChild(path(b.x, S[m], P, `stroke:${col(m)};stroke-width:${m === "ours_cv" ? 2.5 : 2}`));
+        svg.appendChild(path(b.x, S[m], P, `stroke:${col(m)};stroke-width:${m === "ours_cv" ? 2.5 : 2}${DASHED.has(m) ? ";stroke-dasharray:5 3" : ""}`));
       });
       hover(svg, P, b.x, (i) => `<div style="margin-bottom:4px">${XT[b.var](b.xlo[i])} to ${XT[b.var](b.xhi[i])} · ${b.n[i]} children</div>` +
-        ms.map((m) => `<div><span class="sw" style="display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle;background:${col(m)}"></span>${SHORT[m]}: <b>${S[m][i] === null ? "n/a" : stat === "mean" ? sgn(S[m][i], 2) : S[m][i].toFixed(2)}</b></div>`).join(""));
+        ms.map((m) => `<div><span class="sw" style="display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle;background:${swBg(m)}"></span>${SHORT[m]}: <b>${S[m][i] === null ? "n/a" : stat === "mean" ? sgn(S[m][i], 2) : S[m][i].toFixed(2)}</b></div>`).join(""));
     });
   }
 
