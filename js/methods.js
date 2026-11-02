@@ -209,21 +209,28 @@
 
   // ---------- agreement ----------
   function renderAgree() {
-    const tb = $("agree-body"); tb.textContent = "";
+    const host = $("agree-body"); host.textContent = "";
     const A = D.agree[key].filter((r) => r.method !== "ours" && ORDER.includes(r.method)).sort((a, b) => byOrder(a.method, b.method));
-    const maxF = Math.max(...A.map((r) => r.both + r.ours_only + r.other_only));
-    A.forEach((r) => {
-      const tr = document.createElement("tr");
-      const seg = (v, c) => v > 0 ? `<span style="width:${(100 * v / maxF).toFixed(2)}%;background:${c}" title="${v}"></span>` : "";
-      tr.innerHTML = `<td>${NAME[r.method] || r.method}</td><td class="num">${r.n.toLocaleString("en-US")}</td><td class="num">${r.both}</td><td class="num">${r.ours_only}</td><td class="num">${r.other_only}</td>` +
-        `<td><div class="agbar" role="img" aria-label="${r.both} both, ${r.ours_only} this model only, ${r.other_only} other only">${seg(r.ours_only, "var(--m1)")}${seg(r.both, "var(--muted)")}${seg(r.other_only, "var(--m2)")}</div></td>`;
-      tb.appendChild(tr);
-    });
-    if (!$("ag-key")) {
-      const k = document.createElement("div"); k.className = "ag-key"; k.id = "ag-key";
-      k.innerHTML = `<span><i style="background:var(--m1)"></i>This model only</span><span><i style="background:var(--muted)"></i>Both</span><span><i style="background:var(--m2)"></i>Other method only</span>`;
-      $("agree-body").closest(".table-wrap").after(k);
+    if (!A.length) return;
+    const oursN = A[0].both + A[0].ours_only, nAll = A[0].n;          // this model's own flags (same children for every row with full n)
+    const maxW = Math.max(oursN, ...A.map((r) => r.both + r.other_only + r.ours_only), 0.0228 * nAll) * 1.04;
+    const pct = (v) => (100 * v / maxW).toFixed(2) + "%";
+    const seg = (v, cls, lab) => v > 0 ? `<span class="${cls}" style="width:${pct(v)}" title="${lab}: ${v}">${v / maxW > 0.045 ? v : ""}</span>` : "";
+    function row(name, txt, bar, n, ref) {
+      const d = document.createElement("div"); d.className = "ag-row" + (ref ? " ref" : "");
+      d.innerHTML = `<div class="ag-name">${name}<span class="ag-txt">${txt}</span></div>` +
+        `<div class="agbar" role="img" aria-label="${txt}">${bar}<i class="tick" style="left:${pct(0.0228 * n)}" title="Expected 2.3%: ${Math.round(0.0228 * n)}"></i></div>`;
+      host.appendChild(d);
     }
+    row("This model, cross-validated", `flags ${oursN} (${(100 * oursN / nAll).toFixed(1)}%)`, seg(oursN, "shared", "Flagged"), nAll, true);
+    A.forEach((r) => {
+      const tot = r.both + r.other_only, theirs = r.both + r.ours_only;
+      const txt = `flags ${tot} (${(100 * tot / r.n).toFixed(1)}%): ${r.both} in common, ${r.other_only} of its own; misses ${r.ours_only} of this model's ${theirs}` + (r.n < nAll ? `; ages 2 y and up (${r.n.toLocaleString("en-US")} children)` : "");
+      row(NAME[r.method] || r.method, txt,
+        seg(r.both, "shared", "Also flagged by this model") + seg(r.other_only, "alone", "Flagged by this method only") + seg(r.ours_only, "missed", "Flagged by this model only"), r.n);
+    });
+    $("ag-key").innerHTML = `<span><i style="background:var(--m1)"></i>Also above +2 in this model</span><span><i style="background:var(--muted)"></i>Above +2 in this method only</span>` +
+      `<span><i style="border:1.5px dashed var(--m1)"></i>Above +2 in this model only (missed)</span><span><i style="width:0;border-left:2px solid var(--ink);border-radius:0"></i>Expected 2.3%</span>`;
   }
 
   // ---------- weight curves ----------

@@ -89,14 +89,10 @@
     </section>
 
     <section class="panel">
-      <h2>Who gets flagged above +2: <span class="lvl-name"></span></h2>
-      <p class="sub" style="margin:0 0 12px;max-width:85ch">Agreement with the cross-validated model on z &gt; 2. Expected in healthy children: about 2.3%, roughly 73 children. <i>Both</i> flagged by both; <i>this model only</i> flagged here and missed by the other method; <i>other only</i> flagged by the other method alone.</p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Method</th><th class="num">Children</th><th class="num">Both</th><th class="num">This model only</th><th class="num">Other only</th><th style="width:38%">Flagged above +2</th></tr></thead>
-          <tbody id="agree-body"></tbody>
-        </table>
-      </div>
+      <h2>Do the methods flag the same children? <span class="lvl-name"></span></h2>
+      <p class="sub" style="margin:0 0 12px;max-width:85ch">Every child here is healthy, so above +2 does not mean dilated: about 2.3% of any healthy group should land there (the tick on each bar, roughly 73 children). A good method flags about that many, and ideally the same children as other good methods. Each bar is the set of children a method places above +2, split by whether this model (cross-validated) places them there too. The hollow segment shows children this model flags that the method does not.</p>
+      <div class="ag-key" id="ag-key"></div>
+      <div class="ag-list" id="agree-body"></div>
     </section>
 
     <section class="panel">
@@ -152,12 +148,26 @@ details.numbers summary { cursor: pointer; font-weight: 700; font-size: 14px; co
 @media (max-width: 560px) { table.score thead tr:first-child th:first-child, table.score tbody td:first-child { min-width: 150px; box-shadow: 1px 0 0 var(--line); } }
 .findings li { margin-bottom: 6px; }
 table.score td:first-child .sw { display: inline-block; width: 12px; height: 3px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
-.agbar { display: flex; height: 12px; gap: 2px; }
-.agbar span { display: block; height: 100%; }
-.agbar span:first-child { border-radius: 4px 0 0 4px; }
-.agbar span:last-child { border-radius: 0 4px 4px 0; }
-.ag-key { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin-top: 8px; }
-.ag-key i { display: inline-block; width: 12px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.ag-list { display: grid; gap: 14px; margin-top: 12px; }
+.ag-row { display: grid; grid-template-columns: minmax(170px, 230px) 1fr; gap: 4px 16px; align-items: center; }
+.ag-row .ag-name { font-size: 14px; }
+.ag-row .ag-name .ag-txt { display: block; font-size: 13px; color: var(--muted); }
+.ag-row.ref .ag-name { font-weight: 700; }
+.agbar { position: relative; display: flex; height: 18px; gap: 2px; }
+.agbar > span { display: flex; align-items: center; justify-content: center; height: 100%; font: 600 11px var(--font-num); color: #fff; overflow: hidden; white-space: nowrap; }
+.agbar > span.shared { background: var(--m1); }
+.agbar > span.alone { background: var(--muted); }
+.agbar > span.missed { background: transparent; border: 1.5px dashed var(--m1); color: var(--ink); }
+.agbar > span:first-child { border-radius: 4px 0 0 4px; }
+.agbar > span:last-of-type { border-radius: 0 4px 4px 0; }
+.agbar { margin: 7px 0; }
+.agbar .tick { position: absolute; top: -7px; bottom: -7px; width: 0; }
+.agbar .tick::before, .agbar .tick::after { content: ""; position: absolute; left: -1px; height: 6px; border-left: 2px solid var(--ink); }
+.agbar .tick::before { top: 0; }
+.agbar .tick::after { bottom: 0; }
+.ag-key { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.ag-key i { display: inline-block; width: 14px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+@media (max-width: 560px) { .ag-row { grid-template-columns: 1fr; } }
 </style>
 <script src="models/root_bccg.js"></script>
 <script src="js/aortic-model.js"></script>
