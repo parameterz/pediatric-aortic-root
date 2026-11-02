@@ -113,6 +113,53 @@
     });
   }
 
+  // ---------- plain-language verdicts ----------
+  const RANK = { "": 0, warn: 1, bad: 2 };
+  const worst = (...g) => g.reduce((a, b) => (RANK[b] > RANK[a] ? b : a), "");
+  const MARK = { "": "✓", warn: "!", bad: "!!" };
+  function vcell(level, text, note) {
+    return `<td class="${level || "ok"}"><span class="mk">${MARK[level]}</span>${text}${note ? `<span class="num-note">${note}</span>` : ""}</td>`;
+  }
+  function verdicts(r) {
+    // centre and spread
+    const lm = T.mean(r.mean), ls = T.sd(r.sd), c = [];
+    if (lm) c.push(`runs ${r.mean > 0 ? "high" : "low"} by ${Math.abs(r.mean).toFixed(2)} z`);
+    if (ls) c.push(`spread too ${r.sd < 1 ? "narrow" : "wide"}`);
+    const centre = vcell(worst(lm, ls), c.length ? c.join("; ").replace(/^./, (x) => x.toUpperCase()) : "On target",
+      `mean ${sgn(r.mean, 2)}, SD ${r.sd.toFixed(2)}`);
+    // shape and tails
+    const lk = T.skew(r.skew), lt = worst(T.tail(r.gt2), T.tail(r.lt2)), sh = [];
+    if (lk) sh.push(r.skew > 0 ? "Right-skewed" : "Left-skewed");
+    // describe each tail on its own (expected about 2.3% each side)
+    const tail = (v, side) => T.tail(v) ? `too ${v > 2.3 ? "many" : "few"} ${side}` : null;
+    const tails = [tail(r.gt2, "above +2"), tail(r.lt2, "below −2")].filter(Boolean);
+    if (tails.length) sh.push(tails.join(", "));
+    const shape = vcell(worst(lk, lt), sh.length ? sh.join("; ").replace(/^./, (x) => x.toUpperCase()) : "On target",
+      `${r.gt2.toFixed(1)}% above +2, ${r.lt2.toFixed(1)}% below −2`);
+    // height and age: direction from the larger of the two slopes
+    const lh = worst(T.slope(r.sl_ht), T.slope(r.sl_age)), sH = Math.abs(r.sl_ht) >= Math.abs(r.sl_age) ? r.sl_ht : r.sl_age;
+    const height = vcell(lh, !lh ? "Yes" : sH < 0 ? "Over-corrects: taller, older children score lower" : "Under-corrects: taller, older children score higher",
+      `${sgn(r.sl_ht, 2)} per SD of height, ${sgn(r.sl_age, 2)} of age`);
+    // weight: build (weight for height) and BMIz
+    const lw = worst(T.slope(r.sl_wfh), T.slope(r.sl_bmiz)), sW = Math.abs(r.sl_wfh) >= Math.abs(r.sl_bmiz) ? r.sl_wfh : r.sl_bmiz;
+    const weight = vcell(lw, !lw ? "Yes" : sW < 0 ? "Over-corrects: heavier children score lower" : "Under-corrects: heavier children score higher",
+      `${sgn(r.sl_wfh, 2)} per SD of build, ${sgn(r.sl_bmiz, 2)} of BMIz`);
+    // sex
+    const lx = T.slope(r.sex_diff);
+    const sex = vcell(lx, !lx ? "Equal" : `Boys score ${Math.abs(r.sex_diff).toFixed(2)} z ${r.sex_diff > 0 ? "higher" : "lower"}`, `boy − girl ${sgn(r.sex_diff, 2)}`);
+    return centre + shape + height + weight + sex;
+  }
+  function renderVerdicts() {
+    const tb = $("verdict-body"); tb.textContent = "";
+    D.summary[key].filter((r) => ORDER.includes(r.method) && r.method !== "ours").sort((a, b) => byOrder(a.method, b.method)).forEach((r) => {
+      const tr = document.createElement("tr");
+      if (r.method === "ours_cv") tr.className = "ours";
+      const sw = COLOR[r.method] ? `<span class="sw" style="background:${swBg(r.method)}"></span>` : `<span class="sw"></span>`;
+      tr.innerHTML = `<td>${sw}${NAME[r.method] || r.method}</td>` + verdicts(r);
+      tb.appendChild(tr);
+    });
+  }
+
   // ---------- trend panels ----------
   function renderPills() {
     const host = $("method-pills"); host.textContent = "";
@@ -216,7 +263,7 @@
 
   function render() {
     document.querySelectorAll(".lvl-name").forEach((s) => { s.textContent = INFO[key].name; });
-    renderScore(); renderPills(); renderTrends(); renderAgree(); renderCurves();
+    renderVerdicts(); renderScore(); renderPills(); renderTrends(); renderAgree(); renderCurves();
   }
   document.querySelectorAll("#level-tabs button").forEach((b) => b.addEventListener("click", () => {
     key = b.dataset.k;

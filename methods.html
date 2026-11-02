@@ -53,17 +53,26 @@
 
     <section class="panel">
       <h2>Scorecard: <span class="lvl-name"></span></h2>
-      <p class="sub" style="margin:0 0 12px;max-width:85ch">Trend columns give the change in mean z per standard deviation of each variable (a slope of 0.2 means the tallest children run about 0.8 z higher than the shortest). Boy − girl is the difference in mean z. Shaded cells are off target: <span class="pill warn">! worth noting</span> <span class="pill bad">!! clearly off</span>. Thresholds: mean beyond ±0.1 / ±0.25; SD outside 0.95–1.05 / 0.9–1.1; skewness beyond ±0.1 / ±0.25; tail outside 1.6–3.0% / 1.2–4.0%; trends and sex difference beyond ±0.05 / ±0.15.</p>
+      <p class="sub" style="margin:0 0 12px;max-width:85ch">A z-score that does its job is centred at 0 with an SD of 1, has about 2.3% of healthy children beyond each of ±2, and no longer depends on height, age, weight or sex. Each column asks one of those questions. The last three are residual dependencies: does z still change with that variable after the method has adjusted for it? <span class="pill ok">✓ on target</span> <span class="pill warn">! worth noting</span> <span class="pill bad">!! clearly off</span></p>
       <div class="table-wrap">
-        <table class="score">
-          <thead>
-            <tr><th rowspan="2">Method</th><th class="num" rowspan="2">Children</th><th class="num" rowspan="2">Mean</th><th class="num" rowspan="2">SD</th><th class="num" rowspan="2">Skew</th><th class="num" colspan="2">Beyond (%)</th><th class="num" colspan="4">Trend in z per SD of</th><th class="num" rowspan="2">Boy − girl</th></tr>
-            <tr><th class="num">+2</th><th class="num">−2</th><th class="num">Height</th><th class="num">Age</th><th class="num">Build</th><th class="num">BMIz</th></tr>
-          </thead>
-          <tbody id="score-body"></tbody>
+        <table class="score verdict">
+          <thead><tr><th>Method</th><th>Centre and spread</th><th>Shape and tails</th><th>Height and age removed?</th><th>Weight handled?</th><th>Boys vs girls</th></tr></thead>
+          <tbody id="verdict-body"></tbody>
         </table>
       </div>
-      <p class="sub" style="margin:10px 0 0">Build is weight for height (weight relative to the typical weight for the child's height). BMIz is the WHO BMI-for-age z-score.</p>
+      <details class="numbers">
+        <summary>Show the numbers</summary>
+        <p class="sub" style="margin:8px 0 12px;max-width:85ch">Trend columns give the change in mean z per standard deviation of each variable (a slope of 0.2 means the tallest children run about 0.8 z higher than the shortest). Boy − girl is the difference in mean z. Thresholds for ! and !!: mean beyond ±0.1 / ±0.25; SD outside 0.95–1.05 / 0.9–1.1; skewness beyond ±0.1 / ±0.25; percentage beyond ±2 outside 1.6–3.0 / 1.2–4.0; trends and sex difference beyond ±0.05 / ±0.15. Build is weight for height (weight relative to the typical weight for the child's height); BMIz is the WHO BMI-for-age z-score.</p>
+        <div class="table-wrap">
+          <table class="score">
+            <thead>
+              <tr><th rowspan="2">Method</th><th class="num" rowspan="2">Children</th><th class="num" rowspan="2">Mean</th><th class="num" rowspan="2">SD</th><th class="num" rowspan="2">Skew</th><th class="num" colspan="2">Beyond (%)</th><th class="num" colspan="4">Trend in z per SD of</th><th class="num" rowspan="2">Boy − girl</th></tr>
+              <tr><th class="num">+2</th><th class="num">−2</th><th class="num">Height</th><th class="num">Age</th><th class="num">Build</th><th class="num">BMIz</th></tr>
+            </thead>
+            <tbody id="score-body"></tbody>
+          </table>
+        </div>
+      </details>
     </section>
 
     <section class="panel">
@@ -126,8 +135,21 @@ table.score td.bad { background: var(--band-severe); color: var(--chip-severe-in
 table.score td.warn::before { content: "! "; }
 table.score td.bad::before { content: "!! "; }
 table.score tr.ours td:first-child { font-weight: 700; }
-table.score th:first-child, table.score td:first-child { min-width: 190px; position: sticky; left: 0; background: var(--surface); z-index: 1; }
-@media (max-width: 560px) { table.score th:first-child, table.score td:first-child { min-width: 150px; box-shadow: 1px 0 0 var(--line); } }
+table.score thead tr:first-child th:first-child, table.score tbody td:first-child { min-width: 190px; position: sticky; left: 0; background: var(--surface); z-index: 1; }
+table.verdict td { font-size: 14px; line-height: 1.35; min-width: 150px; }
+table.verdict td.ok { color: var(--muted); }
+table.verdict td.warn, table.verdict td.bad { font-weight: 400; color: var(--ink); }
+table.verdict td.warn { background: color-mix(in srgb, var(--band-mild) 55%, transparent); }
+table.verdict td.bad { background: color-mix(in srgb, var(--band-severe) 45%, transparent); }
+table.verdict td.warn .mk { color: var(--chip-mild-ink); }
+table.verdict td.bad .mk { color: var(--chip-severe-ink); }
+table.verdict td.warn::before, table.verdict td.bad::before { content: none; }
+table.verdict .mk { display: inline-block; min-width: 1.6em; font-weight: 700; font-family: var(--font-num); }
+table.verdict td.ok .mk { color: var(--chip-normal-ink); }
+table.verdict .num-note { display: block; font-family: var(--font-num); font-size: 12px; opacity: .85; margin-left: 1.6em; }
+details.numbers { margin-top: 14px; }
+details.numbers summary { cursor: pointer; font-weight: 700; font-size: 14px; color: var(--ink); }
+@media (max-width: 560px) { table.score thead tr:first-child th:first-child, table.score tbody td:first-child { min-width: 150px; box-shadow: 1px 0 0 var(--line); } }
 .findings li { margin-bottom: 6px; }
 table.score td:first-child .sw { display: inline-block; width: 12px; height: 3px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
 .agbar { display: flex; height: 12px; gap: 2px; }
